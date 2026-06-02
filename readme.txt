@@ -1,1 +1,1 @@
-For study zephyr on raspberry.
+For study zephyr on raspberry PI.
