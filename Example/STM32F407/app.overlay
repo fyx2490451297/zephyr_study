@@ -1,0 +1,35 @@
+/* app.overlay */
+
+/ {
+    /* 1. 定义一个 leds 节点 */
+    leds {
+        compatible = "gpio-leds";
+
+        /* Board Blue LED */
+        board_blue_led: blue_led_pb2 {
+            /* 关联到 GPIOB 端口，引脚号为 2
+             * GPIO_ACTIVE_LOW 告诉系统这个引脚拉低才会亮
+             */
+            gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+            label = "Board Blue LED";
+        };
+
+        /* Board Red LED */
+        board_red_led: blue_red_pc5 {
+            /* 关联到 GPIOC 端口，引脚号为 5
+             * GPIO_ACTIVE_LOW 告诉系统这个引脚拉低才会亮
+             */
+            gpios = <&gpioc 5 GPIO_ACTIVE_LOW>;
+            label = "Board Red LED";
+        };
+    };
+
+    /* 3. 设置别名 (极度重要！)
+     * Zephyr 官方的 Blink 示例都会去寻找 "led0" 这个别名。
+     * 把刚才定义的 board_blue_led 绑定到 "led0" 上。
+     */
+    aliases {
+        led0 = &board_blue_led;
+        led1 = &board_red_led;
+    };
+};
