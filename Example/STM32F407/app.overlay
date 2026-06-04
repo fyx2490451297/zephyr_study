@@ -1,0 +1,14 @@
+/* app.overlay */
+/ {
+    leds {
+        compatible = "gpio-leds";
+        board_blue_led: blue_led_pb2 {
+            gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+            label = "Board Blue LED";
+        };
+    };
+
+    aliases {
+        led0 = &board_blue_led;
+    };
+};

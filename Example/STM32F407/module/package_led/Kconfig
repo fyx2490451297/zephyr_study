@@ -1,0 +1,23 @@
+menu "LED Package Configuration"
+
+config PACKAGE_LED
+    bool "Enable System Status LED Module"
+    default y
+    help
+      开启此选项以将 LED 模块编译进内核。
+
+config PACKAGE_LED_AUTO_BLINK
+    bool "Enable Auto Blinking in Background"
+    default y
+    depends on PACKAGE_LED
+    help
+      如果开启，LED 模块将在后台自动闪烁，不阻塞主线程。
+
+config PACKAGE_LED_BLINK_INTERVAL
+    int "LED Blink Interval (ms)"
+    default 500
+    depends on PACKAGE_LED_AUTO_BLINK
+    help
+      设置自动闪烁的间隔时间（毫秒）。
+
+endmenu

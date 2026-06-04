@@ -1,0 +1,7 @@
+mainmenu "STM32F407 Application Configuration"
+
+# 引入官方默认配置（必需）
+source "Kconfig.zephyr"
+
+# 引入独立模块配置 (在 menuconfig / guiconfig 中展示为子菜单)
+rsource "module/package_led/Kconfig"
