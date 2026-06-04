@@ -63,5 +63,24 @@
          * 驱动会读取真实硬件 ID 和这个对比，如果对不上会报错，防止你接错线 
          */
         jedec-id = [ef 40 18];
+
+        /* 定义固定分区表 */
+        partitions {
+            compatible = "fixed-partitions";
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            /* 我们划分前 4MB (0x400000 字节) 的空间作为文件系统存储区 */
+            storage_partition: partition@0 {
+                label = "storage";
+                reg = <0x00000000 0x00400000>;
+            };
+            
+            /* 剩下的 12MB 空间可以留作他用（比如 OTA 固件下载区） */
+            slot1_partition: partition@400000 {
+                label = "image-1";
+                reg = <0x00400000 0x00C00000>;
+            };
+        };
     };
 };
