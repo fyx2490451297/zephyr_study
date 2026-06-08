@@ -2,17 +2,17 @@
 #define APP_LED_H
 
 /**
- * @brief 打开状态 LED
+ * @brief Turn on LED
  */
 int app_led_on(void);
 
 /**
- * @brief 关闭状态 LED
+ * @brief Turn off LED
  */
 int app_led_off(void);
 
 /**
- * @brief 翻转状态 LED 的电平
+ * @brief Toggle LED state
  */
 int app_led_toggle(void);
 
