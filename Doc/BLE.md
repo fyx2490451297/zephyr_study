@@ -1,6 +1,6 @@
 ## BLE Protocol Stack
 
-![1780919690929](image/BLE/1780919690929.png)
+![](image/BLE/BLE Protocol Stack.png "BLE Protocol Stack")
 
 1. Application(应用层)：公司大老板 / 客户最高层
    大老板根本不关心包裹是怎么运的、用了什么卡车。他只负责下达核心业务指令：“现在用户的心率是120次/分，马上把这个数据发给手机！”
@@ -65,21 +65,19 @@
 
 ---
 
-
-
 ## Network topologies
 
 1. Broadcast topology
    在广播拓扑中，数据传输无需设备间建立连接。这是通过使用广播包将数据广播给范围内所有设备来实现的。外围设备（更具体地说是广播器）广播数据，而中心设备（更具体地说是观察器）扫描并读取广播包中的数据。
 
-   ![1780923008276](image/BLE/1780923008276.png)
+   ![](image/BLE/Broadcast topology.png)
 2. Connected topology
 
    连通网络拓扑结构在数据传输之前会先建立连接。与广播拓扑结构不同，这种通信方式是双向的。
 
-   ![1780923103172](image/BLE/1780923103172.png)
+   ![](image/BLE/Connected topology.png)
 3. Multi-role topology
 
    单个设备也可以同时扮演多种不同的角色。例如，同一设备在一种环境下可以作为外围设备，而在另一种环境下可以作为中心设备。
 
-   ![1780923154362](image/BLE/1780923154362.png)
+   ![](image/BLE/Multi-role topology.png)
