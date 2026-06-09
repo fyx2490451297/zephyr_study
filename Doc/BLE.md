@@ -82,3 +82,104 @@
    单个设备也可以同时扮演多种不同的角色。例如，同一设备在一种环境下可以作为外围设备，而在另一种环境下可以作为中心设备。
 
    ![](image/BLE/Multi-role_topology.png "Multi-role topology")
+
+---
+
+## The Attribute Protocol
+ATT层是蓝牙低功耗设备连接阶段数据传输、接收和处理的基础。它基于客户端-服务器架构，其中服务器保存数据，可以直接将数据发送给客户端，或者客户端可以从服务器轮询数据。
+
+在大多数情况下，外围设备是服务器，因为它是获取和存储数据的设备。同样，中心设备通常是客户端，因为它是接收来自服务器的数据的设备。
+
+* GATT Server:该设备存储数据并提供GATT客户端访问数据的方法。
+* GATT Client:该设备通过特定的GATT操作访问GATT服务器上的数据。
+
+ATT 层定义了一种称为属性的数据结构，GATT 服务器使用该数据结构来存储数据。服务器可以同时保存多个不同的属性。
+
+* Attribute:由ATT协议定义的标准化数据表示格式。
+---
+
+# The Generic Attribute Profile
+通用属性配置文件 (GATT) 层直接位于 ATT 层之上，并在此基础上，将属性分层分类为配置文件、服务和特征。GATT 层使用这些概念来管理蓝牙低功耗 (BLE) 设备之间的数据传输。
+
+在客户端开始与服务器交互之前，客户端并不知道服务器上存储的属性的性质。因此，客户端首先执行所谓的服务发现，即向服务器查询这些属性。
+
+---
+
+## PHY:Radio Modes
+
+1. 1M PHY
+2. 2M PHY
+3. Coded PHY
+
+---
+
+## Advertising Process
+
+### Advertising and discovery
+当低功耗蓝牙设备处于广播状态时，它会发送广播数据包来宣告自身的存在，并可能与其他设备建立连接。这些广播数据包会按照广播间隔定期发送。
+
+* Advertising intervals:广波数据包的发送间隔。范围为 20 毫秒至 10.24 秒，步长为 0.625 毫秒。
+
+### Advertisement channels
+蓝牙低功耗 (BLE) 设备通过 40 个不同的频率信道进行通信。这些信道分为三个主广播信道和 37 个辅助广播信道。主广播信道主要用于广播目的。辅助广播信道有时也可用于广播目的，但主要用于连接建立后的数据传输。
+
+为确保一定的冗余度，广播数据包会通过三个主要广播频道（频道 37、38 和 39）发送。同时，扫描设备会扫描这三个频道，以查找广播设备。
+
+### Scan interval and scan window
+与广播间隔类似，扫描间隔是指扫描器扫描广播数据包的频率。扫描窗口是指扫描器扫描数据包的时间，实际上代表了设备在每个扫描间隔内进行扫描与不进行扫描的占空比。
+
+* Scan interval:设备扫描广告数据包的间隔。
+* Scan window:设备在每个扫描间隔内扫描数据包所花费的时间。两者取值范围均为 2.5 毫秒至 10.24 秒，步长为 0.625 毫秒。
+
+### Scan request and response
+当外围设备广播时，中心设备还可以选择向外围设备发送扫描请求，请求广播数据包中未包含的附加信息。如果扫描请求被接受，外围设备将以扫描响应进行回复，该响应也通过三个主要广播信道传输。
+
+* Scan request:中央设备向外围设备发送的消息，用于请求广播包中未包含的附加信息
+* Scan response:作为扫描请求的响应而发送的消息，其中包含额外的用户数据
+
+---
+
+## Advertising types
+外围设备可以通过多种方式进行广播宣传。
+
+* Connectable vs. non-connectable:判断中央设备是否可以连接到外围设备
+* Scannable vs. non-scannable:确定外围设备是否接受来自扫描仪的扫描请求
+* Directed vs. undirected:确定广告数据包是否定向到特定扫描器
+
+传统广播主要分为四种类型。
+* Scannable and connectable (ADV_IND):这是最常见的广播类型。如果外围设备使用这种广播类型，则意味着它既可扫描又可连接。也就是说，外围设备会广播自身的存在，允许中心设备发送扫描请求，并以扫描响应作为回应（因此可扫描），随后建立连接（因此可连接）。
+* Directed connectable (ADV_DIRECT_IND):这种类型的广播用于定向广播，广播商不接受扫描请求。它是定向的、可连接的，但不可扫描的。这种方法适用于设备已知晓扫描器位置，只想快速重新连接的情况。例如，蓝牙鼠标与电脑断开连接后，只需重新连接即可。在这种情况下，无需接受扫描请求，发送定向广告数据包可以更快地缩短连接过程。
+* Non-connectable and scannable (ADV_SCAN_IND):使用此类广播的设备只会接受扫描请求，但不允许与其建立连接（因此无法连接）。
+* Non-connectable and non-scannable (ADV_NONCONN_IND): 这种类型的广播既不接受扫描请求，也不接受建立连接。此类广播的典型应用场景是信标，由于信标不允许接收任何数据，因此设备无需将无线电切换到接收模式，从而降低了电池消耗。
+
+---
+
+## Bluetooth address
+每个低功耗蓝牙 (BLE) 设备都由一个唯一的 48 位地址标识。蓝牙地址分为公共地址和随机地址。随机地址又根据其是否可变分为静态地址和私有地址。最后，私有地址又分为可解析地址和不可解析地址。请注意，随机地址和私有地址只是分类类型，并非实际的地址类型。
+
+蓝牙低功耗设备至少使用以下地址类型之一
+* Public address:该程序由制造商编程到设备中，并已在IEEE注册。
+* Random static address:可在启动时配置，并在设备整个生命周期内保持不变。无需向 IEEE 注册，是公共地址的常用替代方案。
+* Random private resolvable:（可选）一个会定期更改但可通过预共享密钥解析的地址
+* Random private non-resolvable:（可选）一个会定期更改且无法解析的地址
+
+---
+
+## Advertisement packet
+
+BLE packet structure
+   ![](image/BLE/BLE_packet.png "BLE_packet")
+
+Advertisement PDU header
+   ![](image/BLE/Advertisement_PDU.png "Advertisement_PDU")
+
+* PDU type:广播类型
+* RFU:保留
+* ChSel:如果支持 LE 信道选择算法 #2，则设置为 1
+* TxAdd:根据发送方地址是公开的还是随机的，返回值为 0 或 1。
+* RxAdd:0 或 1，取决于接收地址是公开的还是随机的。
+* Length:Payload的长度
+
+Advertisement PDU payload
+   ![](image/BLE/Advertisement_PDU_payload.png "Advertisement_PDU")
+
