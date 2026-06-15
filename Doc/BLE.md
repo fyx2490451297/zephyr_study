@@ -360,5 +360,53 @@ UUID 是蓝牙低功耗 (Bluetooth LE) 领域中经常看到的缩写。它是�
 
 句柄类似于用于寻址属性的行号。服务声明属性的“类型”字段保存 UUID (0x2800)，这是一个由 SIG 定义的唯一 UUID，仅用于指示服务的开始。
 
-
 此处的“权限”字段表示“只读”，无需身份验证。这在服务声明属性中是预期行为，因为没有必要为其设置写入权限，它仅用于声明服务的开始。
+
+最后，“值”字段保存所声明服务的 UUID。例如，“心率服务”是由 SIG 定义的服务，其 UUID 为 0x180D，该 UUID 存储在“心率服务”声明属性的“值”字段中。
+
+### Characteristics
+因此，一项服务可以有零个或多个特征定义（通常称为特征）。一个特征至少包含两个属性，并且可以包含更多属性。
+
+   ![](image/BLE/Attributes_forming_a_characteristic.png "Attributes_forming_a_characteristic")
+
+与服务定义类似，特征定义也以声明属性开头，用于指示该特征在服务定义特征序列中的起始位置。声明属性之后是特征值属性，用于保存实际的用户数据。此外，一个特征还可以选择性地包含一个或多个特征描述符属性。
+
+* Characteristic declaration attribute:包含有关特征值属性的元数据
+* Characteristic value attribute:包含实际用户数据
+* Characteristic descriptor attribute:包含更多关于该特征的元数据
+
+#### Characteristic declaration attribute
+特性定义以特性声明属性开头，该属性指示服务定义中特性序列的起始位置。特性声明属性的“类型”字段保存仅用于声明特性的 UUID (0x2803)。该声明属性具有只读权限，确保客户端可以读取其值但不能写入。
+
+   ![](image/BLE/Characteristic_declaration_attribute.png "Characteristic_declaration_attribute")
+
+“值”字段包含有关所声明特征的重要信息，具体来说，它包含三个不同的字段。
+* Characteristic properties:允许的GATT操作
+* Characteristic value handle:包含用户数据（值）的属性的句柄（地址），即特征值属性
+* Characteristic UUID:所声明特征的 UUID
+
+#### Characteristic value attribute
+在声明特征的属性之后，是特征值属性。实际的用户数据就存储在这里。它的句柄和类型在特征声明属性值字段中被引用。当然，实际的用户数据就存储在它的值字段中。权限字段指示客户端是否可以读取和/或写入此属性。
+
+   ![](image/BLE/Characteristic_value_attribute.png "Characteristic_value_attribute")
+
+#### Characteristic descriptors
+特征描述符属性是可选的。它们包含关于特征的附加元数据，为客户端提供更多关于特征性质的信息。描述符有多种类型，但通常分为两类：GATT 定义的描述符和自定义描述符。
+
+   ![](image/BLE/Characteristic_descriptor.png "Characteristic_descriptor")
+
+描述符还允许客户端为某些服务器发起的 GATT 操作设置权限
+
+#### Client characteristic configuration descriptor (CCCD)
+客户端特征配置描述符 (CCCD) 是一种特殊类型的特征描述符，当特征支持服务器发起的操作（例如通知和指示）时，它是必需的。这是一个可写的描述符，允许 GATT 客户端启用和禁用该特征的通知或指示。GATT客户端可以通过在特定特征的CCCD中启用指示或通知，订阅其希望接收更新的特征。
+
+例如，在心率服务中，有一个名为“心率测量”的特征。GATT 客户端（例如您的手机）可以使用此特征的 CCCD 来接收有关此特征的更新。因此，它通过在该特征的 CCCD 中启用“指示”或“通知”来订阅“心率测量”特征。这意味着 GATT 服务器（很可能是一个心率传感器设备）会将这些测量数据推送到您的手机，而无需您的手机轮询获取这些数据。
+
+CCCD 属性的格式如下图所示。CCCD 的 UUID 为 0x2902。CCCD 必须始终可读可写。类型为 CCCD 的描述符的“值”字段只有 2 位。第一位指示是否启用通知，第二位指示信息。
+
+   ![](image/BLE/Client_characteristic_configuration_descriptor.png "Client_characteristic_configuration_descriptor")
+
+## Attribute table
+Example:
+
+   ![](image/BLE/lbs_service.png "lbs_service")
