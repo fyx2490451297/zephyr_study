@@ -90,8 +90,8 @@ static void sem_producer_thread(void *p1, void *p2, void *p3)
  * This is convenient for learning demos because you do not need to call
  * k_thread_create() manually in main().
  */
-K_THREAD_DEFINE(sem_consumer_tid, 512, sem_consumer_thread,
+K_THREAD_DEFINE(sem_consumer_tid, 1024, sem_consumer_thread,
 		NULL, NULL, NULL, 7, 0, 0);
 
-K_THREAD_DEFINE(sem_producer_tid, 512, sem_producer_thread,
+K_THREAD_DEFINE(sem_producer_tid, 1024, sem_producer_thread,
 		NULL, NULL, NULL, 8, 0, 0);
