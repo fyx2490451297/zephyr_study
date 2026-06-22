@@ -20,7 +20,7 @@ static int ble_demo_init(void)
 		return err;
 	}
 
-	err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), NULL, 0);
+	err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
 	if (err) {
 		LOG_ERR("Advertising start failed (%d)", err);
 		return err;
