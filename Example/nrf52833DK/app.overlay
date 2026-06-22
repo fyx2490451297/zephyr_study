@@ -1,0 +1,32 @@
+/* app.overlay */
+/ {
+    leds {
+        compatible = "gpio-leds";
+        board_led_1: board_led_p0_13 {
+            gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+            label = "Board LED 1";
+        };
+
+        board_led_2: board_led_p0_14 {
+            gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+            label = "Board LED 2";
+        };
+
+        board_led_3: board_led_p0_15 {
+            gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
+            label = "Board LED 3";
+        };
+
+        board_led_4: board_led_p0_16 {
+            gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+            label = "Board LED 4";
+        };
+    };
+
+    aliases {
+        led1 = &board_led_1;
+        led2 = &board_led_2;
+        led3 = &board_led_3;
+        led4 = &board_led_4;
+    };
+};

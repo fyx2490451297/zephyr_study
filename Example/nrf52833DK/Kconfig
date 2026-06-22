@@ -1,0 +1,4 @@
+mainmenu "nrf52833DK project Configuration"
+
+# include the default Zephyr configuration (required)
+source "Kconfig.zephyr"
