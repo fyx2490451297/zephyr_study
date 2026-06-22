@@ -21,3 +21,9 @@ Run west build cmd
 ```
 west build -p always -b nrf52833dk/nrf52833
 ```
+
+Flash to MCU
+
+```
+west flash --runner jlink
+```
