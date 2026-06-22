@@ -10,7 +10,7 @@ if PACKAGE_LED_CTRL
 
 config PACKAGE_LED_CTRL_STACK_SIZE
 	int "LED control thread stack size (bytes)"
-	default 512
+	default 1024
 
 config PACKAGE_LED_CTRL_PRIORITY
 	int "LED control thread priority"
