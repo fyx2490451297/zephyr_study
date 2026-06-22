@@ -15,9 +15,6 @@ static const struct gpio_dt_spec led2_spec = GPIO_DT_SPEC_GET(LED2_NODE, gpios);
 static const struct gpio_dt_spec led3_spec = GPIO_DT_SPEC_GET(LED3_NODE, gpios);
 static const struct gpio_dt_spec led4_spec = GPIO_DT_SPEC_GET(LED4_NODE, gpios);
 
-static struct k_thread led_thread_data;
-K_THREAD_STACK_DEFINE(led_thread_stack, 1024);
-
 int led_init(void)
 {
     const struct gpio_dt_spec *leds[] = { &led1_spec, &led2_spec, &led3_spec, &led4_spec };
@@ -69,3 +66,13 @@ int led_toggle(led_id_t led_id)
     }
     return gpio_pin_toggle_dt(leds[led_id]);
 }
+
+static void led_blink_thread(void)
+{
+    while (1) {
+        led_toggle(LED1);
+        k_sleep(K_SECONDS(1));
+    }
+}
+
+K_THREAD_DEFINE(led_thread_id, LED_STACK_SIZE, led_blink_thread, NULL, NULL, NULL, LED_PRIORITY, 0, 0);

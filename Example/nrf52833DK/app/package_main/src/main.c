@@ -16,8 +16,6 @@ int main(void)
         return -1;
     }
 
-    led_on(LED1);
-
     while (1) {
         LOG_DBG("Main loop is running...");
         k_sleep(K_SECONDS(2));

@@ -18,11 +18,6 @@ typedef enum {
     LED_CMD_TOGGLE
 } led_cmd_t;
 
-struct led_msg {
-    led_id_t led_id;
-    led_cmd_t cmd;
-};
-
 /**
  * @brief Initialize all LEDs (LED1 to LED4)
  * @return 0 on success, negative error code on failure
