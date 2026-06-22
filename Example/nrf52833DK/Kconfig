@@ -1,4 +1,11 @@
 mainmenu "nrf52833DK project Configuration"
 
+# Hardware package configurations
+rsource "hardware/package_led/Kconfig"
+rsource "hardware/package_key/Kconfig"
+
+# Application module configurations
+rsource "app/package_led_ctrl/Kconfig"
+
 # include the default Zephyr configuration (required)
 source "Kconfig.zephyr"

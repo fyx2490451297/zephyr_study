@@ -1,5 +1,6 @@
 # CMakeLists.txt for package_led
-target_sources(app PRIVATE src/led.c)
-
-# expose the header files of package_led to the whole project
-zephyr_include_directories(inc)
+if(CONFIG_PACKAGE_LED)
+    zephyr_library_named(package_led)
+    zephyr_library_sources(src/led.c)
+    zephyr_include_directories(inc)
+endif()

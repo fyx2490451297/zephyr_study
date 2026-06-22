@@ -1,4 +1,4 @@
-/* app.overlay */
+/* boards/nrf52833dk_nrf52833.overlay */
 / {
     leds {
         compatible = "gpio-leds";

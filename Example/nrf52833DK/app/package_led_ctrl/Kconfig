@@ -1,0 +1,19 @@
+config PACKAGE_LED_CTRL
+	bool "Enable LED control application module"
+	default y
+	depends on PACKAGE_LED
+	help
+	  Application-level LED control logic (blink, patterns, etc.).
+	  Depends on the LED hardware package (PACKAGE_LED).
+
+if PACKAGE_LED_CTRL
+
+config PACKAGE_LED_CTRL_STACK_SIZE
+	int "LED control thread stack size (bytes)"
+	default 512
+
+config PACKAGE_LED_CTRL_PRIORITY
+	int "LED control thread priority"
+	default 7
+
+endif # PACKAGE_LED_CTRL

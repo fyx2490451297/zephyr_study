@@ -1,0 +1,17 @@
+config PACKAGE_LED
+	bool "Enable LED hardware package"
+	default y
+	help
+	  Enable the LED GPIO driver package for nRF52833DK.
+	  Provides led_on(), led_off(), led_toggle() APIs.
+	  The module is auto-initialized via SYS_INIT at APPLICATION level.
+
+if PACKAGE_LED
+
+config PACKAGE_LED_INIT_PRIORITY
+	int "LED driver initialization priority"
+	default 90
+	help
+	  Initialization priority for the LED driver within APPLICATION level.
+
+endif # PACKAGE_LED
