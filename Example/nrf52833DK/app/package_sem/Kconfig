@@ -1,0 +1,7 @@
+config PACKAGE_SEM_DEMO
+	bool "Enable semaphore learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr semaphore demo.
+	  The demo shows how one thread waits on a semaphore and another thread
+	  periodically gives it.

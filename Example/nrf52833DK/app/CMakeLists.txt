@@ -2,3 +2,4 @@
 add_subdirectory(package_main)
 add_subdirectory(package_led_ctrl)
 add_subdirectory(package_ble_demo)
+add_subdirectory(package_sem)
