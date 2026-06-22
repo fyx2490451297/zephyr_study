@@ -33,3 +33,7 @@ west flash --runner jlink
 ## BLE study step
 
 Step1. BLE boardcast example
+
+Step2. BLE scan/connection
+
+Step3. BLE GATT read/write service
