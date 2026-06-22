@@ -35,6 +35,8 @@ static const struct bt_data ad[] = {
 	 *
 	 * If the packet becomes too large, move the name to scan response data.
 	 */
+
+	BT_DATA(BT_DATA_NAME_COMPLETE, "nRF52833 BLE demo", 17),
 };
 
 /* Scan response data is optional.
