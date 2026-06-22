@@ -27,3 +27,9 @@ Flash to MCU
 ```
 west flash --runner jlink
 ```
+
+---
+
+## BLE study step
+
+Step1. BLE boardcast example
