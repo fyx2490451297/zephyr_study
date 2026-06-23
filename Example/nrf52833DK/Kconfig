@@ -8,6 +8,7 @@ rsource "hardware/package_key/Kconfig"
 rsource "app/package_led_ctrl/Kconfig"
 rsource "app/package_ble_demo/Kconfig"
 rsource "app/package_sem/Kconfig"
+rsource "app/package_kmsq/Kconfig"
 
 # include the default Zephyr configuration (required)
 source "Kconfig.zephyr"

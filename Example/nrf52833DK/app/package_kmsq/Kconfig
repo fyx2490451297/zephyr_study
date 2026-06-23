@@ -1,0 +1,8 @@
+config PACKAGE_KMSQ_DEMO
+	bool "Enable message queue learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr message queue (k_msgq) demo.
+	  The demo shows how a producer thread enqueues structured messages and
+	  a consumer thread dequeues and processes them, including blocking
+	  behaviour when the queue is full or empty.
