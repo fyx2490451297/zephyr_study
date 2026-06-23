@@ -152,6 +152,21 @@ Every new `package_*` must provide:
 3. A single `SYS_INIT` entry point named `<module>_init`; no manual init calls from `main()`.
 4. Public API only in `inc/<module>.h`; all implementation details `static` in `src/<module>.c`.
 
+### `prj.conf` and Kconfig dependencies
+
+When enabling a package that declares `depends on <SYMBOL>` in its Kconfig, **all dependency symbols must be explicitly set in `prj.conf`**. Kconfig silently forces an unsatisfied symbol to `n` — the module will not initialize, and no error is printed.
+
+Example: `PACKAGE_MCU_TRANSPORT` requires both `SERIAL` and `UART_INTERRUPT_DRIVEN`. The correct `prj.conf` entry is:
+
+```conf
+# UART subsystem — required by PACKAGE_MCU_TRANSPORT
+CONFIG_SERIAL=y
+CONFIG_UART_INTERRUPT_DRIVEN=y
+CONFIG_PACKAGE_MCU_TRANSPORT=y
+```
+
+Use `menuconfig` (run `west build -t menuconfig`) to inspect unmet dependencies; an `(!)` marker indicates a symbol forced off by its `depends on` chain.
+
 ### Devicetree and hardware abstraction
 
 - Never hard-code GPIO port/pin numbers. Always use `DT_ALIAS` or `DT_NODELABEL` macros and let the `.overlay` file supply the actual hardware mapping.
