@@ -4,7 +4,7 @@
 #include <zephyr/init.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(ble_demo, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(ble_adv_demo, LOG_LEVEL_INF);
 
 /* bt_data is Zephyr's advertising payload format.
  *
@@ -46,7 +46,7 @@ static const struct bt_data ad[] = {
 static const struct bt_data sd[] = {
 };
 
-static int ble_demo_init(void)
+static int ble_adv_demo_init(void)
 {
 	int err;
 
@@ -80,4 +80,4 @@ static int ble_demo_init(void)
 	return 0;
 }
 
-SYS_INIT(ble_demo_init, APPLICATION, CONFIG_PACKAGE_BLE_DEMO_INIT_PRIORITY);
+SYS_INIT(ble_adv_demo_init, APPLICATION, CONFIG_PACKAGE_BLE_ADV_DEMO_INIT_PRIORITY);

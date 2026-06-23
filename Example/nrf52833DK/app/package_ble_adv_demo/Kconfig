@@ -1,4 +1,4 @@
-config PACKAGE_BLE_DEMO
+config PACKAGE_BLE_ADV_DEMO
 	bool "Enable BLE advertising demo"
 	default y
 	depends on BT
@@ -6,12 +6,12 @@ config PACKAGE_BLE_DEMO
 	  Enable a minimal BLE advertising demo for learning.
 	  The demo starts Bluetooth and begins advertising at boot.
 
-if PACKAGE_BLE_DEMO
+if PACKAGE_BLE_ADV_DEMO
 
-config PACKAGE_BLE_DEMO_INIT_PRIORITY
-	int "BLE demo init priority"
+config PACKAGE_BLE_ADV_DEMO_INIT_PRIORITY
+	int "BLE advertising demo init priority"
 	default 90
 	help
 	  Initialization priority for starting BLE advertising.
 
-endif # PACKAGE_BLE_DEMO
+endif # PACKAGE_BLE_ADV_DEMO
