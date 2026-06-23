@@ -54,7 +54,7 @@ LOG_MODULE_REGISTER(ble_scan_conn_demo, LOG_LEVEL_INF);
 /* Name of the peripheral we want to connect to.
  * This matches the name broadcast by package_ble_adv_demo.
  */
-#define TARGET_NAME     "nRF52833 BLE demo"
+#define TARGET_NAME     "This Device"
 #define TARGET_NAME_LEN (sizeof(TARGET_NAME) - 1)
 
 /* Active connection handle.
