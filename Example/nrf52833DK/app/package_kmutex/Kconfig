@@ -1,0 +1,8 @@
+config PACKAGE_KMUTEX_DEMO
+	bool "Enable mutex learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr mutex (k_mutex) demo.
+	  The demo shows how two threads compete for a shared resource and how
+	  k_mutex guarantees that only one thread accesses the resource at a time,
+	  preventing data races and demonstrating priority inheritance.
