@@ -162,15 +162,24 @@ static void kmutex_thread_b(void *p1, void *p2, void *p3)
 
 /* K_THREAD_DEFINE creates and auto-starts both threads at boot.
  *
- * Thread A has priority 6 (higher), Thread B has priority 8 (lower).
+ * Thread A has priority CONFIG_PACKAGE_KMUTEX_DEMO_THREAD_A_PRIORITY (default 6,
+ * higher priority), Thread B has CONFIG_PACKAGE_KMUTEX_DEMO_THREAD_B_PRIORITY
+ * (default 8, lower priority).
+ *
  * This priority gap makes it possible to observe priority inheritance:
  * when Thread A waits for the mutex held by Thread B, Thread B is
- * temporarily promoted to priority 6 by the kernel.
+ * temporarily promoted to Thread A's priority by the kernel.
  *
- * Stack size 1024 bytes is sufficient for this simple demo.
+ * Stack size is controlled via Kconfig.
  */
-K_THREAD_DEFINE(kmutex_thread_a_tid, 1024, kmutex_thread_a,
-		NULL, NULL, NULL, 6, 0, 0);
+K_THREAD_DEFINE(kmutex_thread_a_tid,
+		CONFIG_PACKAGE_KMUTEX_DEMO_STACK_SIZE,
+		kmutex_thread_a,
+		NULL, NULL, NULL,
+		CONFIG_PACKAGE_KMUTEX_DEMO_THREAD_A_PRIORITY, 0, 0);
 
-K_THREAD_DEFINE(kmutex_thread_b_tid, 1024, kmutex_thread_b,
-		NULL, NULL, NULL, 8, 0, 0);
+K_THREAD_DEFINE(kmutex_thread_b_tid,
+		CONFIG_PACKAGE_KMUTEX_DEMO_STACK_SIZE,
+		kmutex_thread_b,
+		NULL, NULL, NULL,
+		CONFIG_PACKAGE_KMUTEX_DEMO_THREAD_B_PRIORITY, 0, 0);

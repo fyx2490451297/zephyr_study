@@ -5,3 +5,27 @@ config PACKAGE_SEM_DEMO
 	  Enable a minimal Zephyr semaphore demo.
 	  The demo shows how one thread waits on a semaphore and another thread
 	  periodically gives it.
+
+if PACKAGE_SEM_DEMO
+
+config PACKAGE_SEM_DEMO_STACK_SIZE
+	int "Semaphore demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both the consumer and producer threads.
+
+config PACKAGE_SEM_DEMO_CONSUMER_PRIORITY
+	int "Semaphore demo consumer thread priority"
+	default 7
+	help
+	  Zephyr thread priority for the consumer thread (lower number = higher priority).
+
+config PACKAGE_SEM_DEMO_PRODUCER_PRIORITY
+	int "Semaphore demo producer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the producer thread.
+	  Should be lower priority (higher number) than the consumer so the
+	  consumer is ready to block before the first give arrives.
+
+endif # PACKAGE_SEM_DEMO

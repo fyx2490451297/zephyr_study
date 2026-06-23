@@ -6,3 +6,27 @@ config PACKAGE_KMSQ_DEMO
 	  The demo shows how a producer thread enqueues structured messages and
 	  a consumer thread dequeues and processes them, including blocking
 	  behaviour when the queue is full or empty.
+
+if PACKAGE_KMSQ_DEMO
+
+config PACKAGE_KMSQ_DEMO_STACK_SIZE
+	int "Message queue demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both the producer and consumer threads.
+
+config PACKAGE_KMSQ_DEMO_PRODUCER_PRIORITY
+	int "Message queue demo producer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the producer thread.
+
+config PACKAGE_KMSQ_DEMO_CONSUMER_PRIORITY
+	int "Message queue demo consumer thread priority"
+	default 9
+	help
+	  Zephyr thread priority for the consumer thread.
+	  Set slightly lower than the producer so the producer runs first when
+	  both are ready; this makes the queue fill-up behaviour easier to observe.
+
+endif # PACKAGE_KMSQ_DEMO

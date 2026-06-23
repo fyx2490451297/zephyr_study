@@ -1,6 +1,7 @@
+#include "led.h"
+
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include "led.h"
 
 LOG_MODULE_REGISTER(led_ctrl, LOG_LEVEL_INF);
 

@@ -153,14 +153,21 @@ static void kmsq_consumer_thread(void *p1, void *p2, void *p3)
 
 /* K_THREAD_DEFINE creates and auto-starts both threads at boot.
  *
- * Producer priority 8 (lower number = higher priority in Zephyr).
- * Consumer priority 9 (slightly lower so the producer runs first when both
- * are ready, which makes the fill-up behaviour easier to observe).
+ * Producer priority CONFIG_PACKAGE_KMSQ_DEMO_PRODUCER_PRIORITY (default 8).
+ * Consumer priority CONFIG_PACKAGE_KMSQ_DEMO_CONSUMER_PRIORITY (default 9,
+ * slightly lower so the producer runs first when both are ready, which makes
+ * the fill-up behaviour easier to observe).
  *
- * Stack size 1024 bytes is sufficient for this simple demo.
+ * Stack size is shared and controlled via Kconfig.
  */
-K_THREAD_DEFINE(kmsq_producer_tid, 1024, kmsq_producer_thread,
-		NULL, NULL, NULL, 8, 0, 0);
+K_THREAD_DEFINE(kmsq_producer_tid,
+		CONFIG_PACKAGE_KMSQ_DEMO_STACK_SIZE,
+		kmsq_producer_thread,
+		NULL, NULL, NULL,
+		CONFIG_PACKAGE_KMSQ_DEMO_PRODUCER_PRIORITY, 0, 0);
 
-K_THREAD_DEFINE(kmsq_consumer_tid, 1024, kmsq_consumer_thread,
-		NULL, NULL, NULL, 9, 0, 0);
+K_THREAD_DEFINE(kmsq_consumer_tid,
+		CONFIG_PACKAGE_KMSQ_DEMO_STACK_SIZE,
+		kmsq_consumer_thread,
+		NULL, NULL, NULL,
+		CONFIG_PACKAGE_KMSQ_DEMO_CONSUMER_PRIORITY, 0, 0);

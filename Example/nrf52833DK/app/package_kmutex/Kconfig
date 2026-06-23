@@ -6,3 +6,30 @@ config PACKAGE_KMUTEX_DEMO
 	  The demo shows how two threads compete for a shared resource and how
 	  k_mutex guarantees that only one thread accesses the resource at a time,
 	  preventing data races and demonstrating priority inheritance.
+
+if PACKAGE_KMUTEX_DEMO
+
+config PACKAGE_KMUTEX_DEMO_STACK_SIZE
+	int "Mutex demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both Thread A and Thread B.
+
+config PACKAGE_KMUTEX_DEMO_THREAD_A_PRIORITY
+	int "Mutex demo Thread A priority (high-priority thread)"
+	default 6
+	help
+	  Zephyr thread priority for Thread A.  Lower number means higher priority.
+	  Thread A is the high-priority contender; when it waits for the mutex held
+	  by Thread B, the kernel elevates Thread B to this priority (priority
+	  inheritance) to avoid priority inversion.
+
+config PACKAGE_KMUTEX_DEMO_THREAD_B_PRIORITY
+	int "Mutex demo Thread B priority (low-priority thread)"
+	default 8
+	help
+	  Zephyr thread priority for Thread B.
+	  Must be numerically larger (lower priority) than THREAD_A_PRIORITY so
+	  that the priority-inheritance effect is observable in the logs.
+
+endif # PACKAGE_KMUTEX_DEMO
