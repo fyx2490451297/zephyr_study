@@ -1,0 +1,21 @@
+config PACKAGE_BLE_SCAN_CONN_DEMO
+	bool "Enable BLE scan and connection demo"
+	default y
+	depends on BT
+	depends on BT_CENTRAL
+	help
+	  Enable a minimal BLE central-role demo for learning.
+	  The demo scans for a target device by name, connects to it, and
+	  automatically reconnects whenever the connection is dropped.
+
+if PACKAGE_BLE_SCAN_CONN_DEMO
+
+config PACKAGE_BLE_SCAN_CONN_DEMO_INIT_PRIORITY
+	int "BLE scan/connection demo init priority"
+	default 91
+	help
+	  Initialization priority for starting BLE scanning.
+	  Must be higher (larger number) than the Bluetooth stack init (90)
+	  so that bt_enable() has already completed when this module runs.
+
+endif # PACKAGE_BLE_SCAN_CONN_DEMO
