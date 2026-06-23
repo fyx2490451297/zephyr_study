@@ -1,0 +1,35 @@
+config PACKAGE_MCU_TRANSPORT
+	bool "Enable MCU transport package (UART1)"
+	default n
+	depends on SERIAL
+	depends on UART_INTERRUPT_DRIVEN
+	help
+	  Enable UART-based byte-stream transport between BLE side and MCU protocol
+	  stack. This package owns UART RX/TX and provides callback-based RX data
+	  delivery for upper protocol layers.
+
+if PACKAGE_MCU_TRANSPORT
+
+config PACKAGE_MCU_TRANSPORT_INIT_PRIORITY
+	int "MCU transport init priority"
+	default 92
+	help
+	  Initialization priority for mcu transport module at APPLICATION level.
+
+config PACKAGE_MCU_TRANSPORT_RX_RING_BUFFER_SIZE
+	int "MCU transport RX ring buffer size (bytes)"
+	default 512
+	range 64 4096
+	help
+	  Ring buffer size used to cache UART RX bytes before upper-layer
+	  consumption.
+
+config PACKAGE_MCU_TRANSPORT_RX_THREAD_STACK_SIZE
+	int "MCU transport RX thread stack size (bytes)"
+	default 1024
+
+config PACKAGE_MCU_TRANSPORT_RX_THREAD_PRIORITY
+	int "MCU transport RX thread priority"
+	default 7
+
+endif # PACKAGE_MCU_TRANSPORT
