@@ -1,0 +1,32 @@
+config PACKAGE_BLE_GATT_CLIENT
+	bool "Enable BLE GATT client"
+	default n
+	depends on BT
+	depends on BT_CENTRAL
+	depends on PACKAGE_BLE_CORE
+	depends on PACKAGE_BLE_CONN
+	help
+	  Provides a simple GATT client API for when the nRF52833 acts in the
+	  Central role: service discovery, characteristic discovery, read,
+	  write (with and without response), and notification subscription.
+	  All operations are asynchronous (callback-based) and serialised —
+	  only one operation of each type may be in flight at a time.
+
+if PACKAGE_BLE_GATT_CLIENT
+
+config PACKAGE_BLE_GATT_CLIENT_INIT_PRIORITY
+	int "BLE GATT client SYS_INIT priority"
+	default 96
+	help
+	  Must be greater than PACKAGE_BLE_CONN_INIT_PRIORITY (default 93).
+
+config PACKAGE_BLE_GATT_CLIENT_MAX_SUBSCRIPTIONS
+	int "Maximum simultaneous GATT notification subscriptions"
+	default 4
+	range 1 16
+	help
+	  Static pool size for bt_gatt_subscribe_params structs.  Each active
+	  subscription (enabled CCC) consumes one slot.  Subscribe calls fail
+	  with -ENOMEM when the pool is exhausted.
+
+endif # PACKAGE_BLE_GATT_CLIENT

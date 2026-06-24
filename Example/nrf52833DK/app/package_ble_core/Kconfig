@@ -1,0 +1,23 @@
+config PACKAGE_BLE_CORE
+	bool "Enable BLE core (Bluetooth stack initialisation)"
+	default n
+	depends on BT
+	help
+	  Initialises the Zephyr Bluetooth Host + Controller stack with
+	  bt_enable() once at APPLICATION boot.  All other BLE packages
+	  (ble_adv, ble_conn, gatt services) depend on this package and
+	  must have a higher SYS_INIT priority number so they run after
+	  ble_core_init() completes.
+	  Only one package may call bt_enable(); enable this package instead
+	  of the individual demo modules (package_ble_adv_demo, etc.).
+
+if PACKAGE_BLE_CORE
+
+config PACKAGE_BLE_CORE_INIT_PRIORITY
+	int "BLE core SYS_INIT priority"
+	default 90
+	help
+	  SYS_INIT priority for ble_core_init().  Must be lower than all
+	  other BLE package priorities so the stack is ready before they run.
+
+endif # PACKAGE_BLE_CORE

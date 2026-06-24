@@ -1,0 +1,32 @@
+config PACKAGE_BLE_CONN
+	bool "Enable BLE connection manager"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	depends on PACKAGE_BLE_CORE
+	depends on PACKAGE_BLE_ADV
+	help
+	  Centralises BLE connection lifecycle management.  Registers the
+	  BT_CONN_CB callbacks (connected / disconnected) and dispatches events
+	  to all modules that register via ble_conn_register_event_cb().
+	  Automatically restarts advertising (via ble_adv_start) on disconnect.
+
+if PACKAGE_BLE_CONN
+
+config PACKAGE_BLE_CONN_INIT_PRIORITY
+	int "BLE connection manager SYS_INIT priority"
+	default 93
+	help
+	  Must be greater than PACKAGE_BLE_ADV_INIT_PRIORITY (default 91) and
+	  PACKAGE_MCU_TRANSPORT_INIT_PRIORITY (default 92).
+
+config PACKAGE_BLE_CONN_MAX_EVENT_CBS
+	int "Maximum number of registered connection event callbacks"
+	default 4
+	range 1 16
+	help
+	  Static pool size for ble_conn_register_event_cb().  Each BLE package
+	  that needs connection events (e.g. ble_gatt_ota_service) consumes one
+	  slot.
+
+endif # PACKAGE_BLE_CONN

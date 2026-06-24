@@ -1,0 +1,39 @@
+config PACKAGE_BLE_GATT_SERVICE
+	bool "Enable BLE GATT common service (Device Information Service)"
+	default n
+	depends on BT
+	depends on PACKAGE_BLE_CORE
+	help
+	  Registers a standard Bluetooth SIG Device Information Service (DIS,
+	  UUID 0x180A) with three read-only characteristics:
+	    Manufacturer Name String  (0x2A29)
+	    Model Number String       (0x2A24)
+	    Firmware Revision String  (0x2A26)
+	  The service is defined via BT_GATT_SERVICE_DEFINE (static, no runtime
+	  call needed).  String values are configured via Kconfig.
+
+if PACKAGE_BLE_GATT_SERVICE
+
+config PACKAGE_BLE_GATT_SERVICE_INIT_PRIORITY
+	int "BLE GATT service SYS_INIT priority"
+	default 94
+
+config PACKAGE_BLE_GATT_SERVICE_MANUFACTURER
+	string "DIS Manufacturer Name String"
+	default "Zephyr Example"
+	help
+	  Returned for ATT reads on UUID 0x2A29 (Manufacturer Name String).
+
+config PACKAGE_BLE_GATT_SERVICE_MODEL
+	string "DIS Model Number String"
+	default "nRF52833DK"
+	help
+	  Returned for ATT reads on UUID 0x2A24 (Model Number String).
+
+config PACKAGE_BLE_GATT_SERVICE_FW_REV
+	string "DIS Firmware Revision String"
+	default "0.1.0"
+	help
+	  Returned for ATT reads on UUID 0x2A26 (Firmware Revision String).
+
+endif # PACKAGE_BLE_GATT_SERVICE

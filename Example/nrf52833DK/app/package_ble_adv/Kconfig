@@ -1,0 +1,21 @@
+config PACKAGE_BLE_ADV
+	bool "Enable BLE advertising manager"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	depends on PACKAGE_BLE_CORE
+	help
+	  Manages BLE connectable advertising.  Starts advertising automatically
+	  on init and exposes ble_adv_start() / ble_adv_stop() so the connection
+	  manager (package_ble_conn) can re-start advertising after disconnect.
+
+if PACKAGE_BLE_ADV
+
+config PACKAGE_BLE_ADV_INIT_PRIORITY
+	int "BLE advertising manager SYS_INIT priority"
+	default 91
+	help
+	  Must be greater than PACKAGE_BLE_CORE_INIT_PRIORITY (default 90) so
+	  the stack is ready before advertising is started.
+
+endif # PACKAGE_BLE_ADV

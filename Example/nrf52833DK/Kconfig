@@ -15,5 +15,13 @@ rsource "app/package_kmsq/Kconfig"
 rsource "app/package_kmutex/Kconfig"
 rsource "app/package_gatt_server_demo/Kconfig"
 
+# BLE OTA production packages
+rsource "app/package_ble_core/Kconfig"
+rsource "app/package_ble_adv/Kconfig"
+rsource "app/package_ble_conn/Kconfig"
+rsource "app/package_ble_gatt_service/Kconfig"
+rsource "app/package_ble_gatt_ota_service/Kconfig"
+rsource "app/package_ble_gatt_client/Kconfig"
+
 # include the default Zephyr configuration (required)
 source "Kconfig.zephyr"

@@ -1,0 +1,36 @@
+config PACKAGE_BLE_GATT_OTA_SERVICE
+	bool "Enable BLE GATT OTA service"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	depends on PACKAGE_BLE_CORE
+	depends on PACKAGE_BLE_CONN
+	depends on PACKAGE_MCU_TRANSPORT
+	help
+	  Registers a custom GATT service that bridges OTA firmware updates
+	  between a BLE Central (phone/PC) and the host MCU via UART.
+	  The service acts as a transparent relay:
+	    Central → [Control Point / Data write] → MCU (via mcu_transport)
+	    MCU     → [UART RX]                   → Central (Status notify)
+	  The MCU protocol framing (sync headers, CRC, SEQ) is handled by the
+	  Central and the MCU; this module forwards raw bytes without parsing.
+
+if PACKAGE_BLE_GATT_OTA_SERVICE
+
+config PACKAGE_BLE_GATT_OTA_SERVICE_INIT_PRIORITY
+	int "BLE OTA service SYS_INIT priority"
+	default 95
+	help
+	  Must be greater than PACKAGE_MCU_TRANSPORT_INIT_PRIORITY (default 92)
+	  because the init function registers an MCU transport RX callback.
+
+config PACKAGE_BLE_GATT_OTA_SERVICE_MAX_DATA_LEN
+	int "Maximum OTA data write size in bytes"
+	default 244
+	range 20 244
+	help
+	  Maximum payload size accepted per ATT write to the Data or Control
+	  Point characteristic.  244 bytes matches the maximum ATT payload
+	  after MTU negotiation on nRF52833 (ATT MTU 247 − 3 bytes overhead).
+
+endif # PACKAGE_BLE_GATT_OTA_SERVICE
