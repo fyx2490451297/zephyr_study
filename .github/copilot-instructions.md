@@ -114,6 +114,7 @@ SYS_INIT(foo_init, APPLICATION, CONFIG_FOO_INIT_PRIORITY);
 
 ### Comments
 
+- **All comments must be written in English.** Chinese or any other language is forbidden in source code comments, Doxygen blocks, and inline annotations.
 - All **public API** in header files must have a Doxygen `/** @brief … @param … @return … */` block.
 - **Non-obvious logic** inside `.c` files gets a `/* … */` block comment directly above the relevant lines. Do not restate what the code obviously does.
 - Use `/* --- Section title --- */` dividers to group related logic inside long source files (see `mcu_transport.c` and `ble_scan_conn_demo.c` as reference).

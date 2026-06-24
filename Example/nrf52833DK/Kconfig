@@ -7,6 +7,7 @@ rsource "hardware/package_key/Kconfig"
 # Application module configurations
 rsource "app/package_led_ctrl/Kconfig"
 rsource "app/package_ble_adv_demo/Kconfig"
+rsource "app/package_adv_conn_demo/Kconfig"
 rsource "app/package_ble_scan_conn_demo/Kconfig"
 rsource "app/package_mcu_transport/Kconfig"
 rsource "app/package_sem/Kconfig"

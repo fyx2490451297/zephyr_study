@@ -1,0 +1,22 @@
+config PACKAGE_ADV_CONN_DEMO
+	bool "Enable BLE advertising + connection demo (Peripheral role)"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	help
+	  Enable a BLE Peripheral-role demo for learning.
+	  The demo initialises the Bluetooth stack, starts advertising, and
+	  handles the full connection lifecycle:
+	    advertise -> connected -> param update -> disconnected -> re-advertise.
+	  Only one BLE demo should be enabled at a time (each calls bt_enable()).
+
+if PACKAGE_ADV_CONN_DEMO
+
+config PACKAGE_ADV_CONN_DEMO_INIT_PRIORITY
+	int "BLE adv/connection demo init priority"
+	default 90
+	help
+	  SYS_INIT priority for this module. Must be >= 90 to run after the
+	  Bluetooth controller driver has been registered.
+
+endif # PACKAGE_ADV_CONN_DEMO
