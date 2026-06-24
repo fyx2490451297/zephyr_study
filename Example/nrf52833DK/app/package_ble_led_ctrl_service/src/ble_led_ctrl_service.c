@@ -106,9 +106,76 @@ static void led4_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value)
 }
 
 /* --------------------------------------------------------------------------
+ * Forward declarations
+ * --------------------------------------------------------------------------
+ * BT_GATT_SERVICE_DEFINE must appear before the write callback bodies because
+ * the write callbacks call bt_gatt_notify(..., &led_ctrl_svc.attrs[idx], ...)
+ * and led_ctrl_svc must already be declared at that point.
+ * The four callbacks are forward-declared here so the service table can
+ * reference them by pointer.
+ * --------------------------------------------------------------------------
+ */
+static ssize_t read_led3(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+			 void *buf, uint16_t len, uint16_t offset);
+static ssize_t read_led4(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+			 void *buf, uint16_t len, uint16_t offset);
+static ssize_t write_led3(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+			  const void *buf, uint16_t len, uint16_t offset,
+			  uint8_t flags);
+static ssize_t write_led4(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+			  const void *buf, uint16_t len, uint16_t offset,
+			  uint8_t flags);
+
+/* --------------------------------------------------------------------------
+ * GATT Service definition
+ * --------------------------------------------------------------------------
+ * Placed before the callback bodies so that led_ctrl_svc is a complete
+ * declaration by the time write_led3/4 reference led_ctrl_svc.attrs[].
+ *
+ * Attribute table layout:
+ *   [0] Primary Service declaration
+ *   [1] LED3 characteristic declaration  (Read + Write + Notify)
+ *   [2] LED3 characteristic value        ← LED3_ATTR_IDX
+ *   [3] LED3 CCC descriptor
+ *   [4] LED4 characteristic declaration  (Read + Write + Notify)
+ *   [5] LED4 characteristic value        ← LED4_ATTR_IDX
+ *   [6] LED4 CCC descriptor
+ * --------------------------------------------------------------------------
+ */
+BT_GATT_SERVICE_DEFINE(led_ctrl_svc,
+	/* Primary Service declaration */
+	BT_GATT_PRIMARY_SERVICE(&led_ctrl_svc_uuid.uuid),
+
+	/* --- LED3 Control Characteristic -----------------------------------
+	 * Properties:
+	 *   BT_GATT_CHRC_READ   — Central may read current LED3 state
+	 *   BT_GATT_CHRC_WRITE  — Central may write 0x00/0x01 to change state
+	 *   BT_GATT_CHRC_NOTIFY — Server pushes state changes to subscribers
+	 *
+	 * BT_GATT_PERM_WRITE: write permitted without link-layer encryption.
+	 * For production use BT_GATT_PERM_WRITE_ENCRYPT to require a bonded,
+	 * encrypted link before LED control is allowed.
+	 */
+	BT_GATT_CHARACTERISTIC(&led3_uuid.uuid,
+		BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_NOTIFY,
+		BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+		read_led3, write_led3, NULL),
+	BT_GATT_CCC(led3_ccc_changed,
+		    BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+
+	/* --- LED4 Control Characteristic ----------------------------------- */
+	BT_GATT_CHARACTERISTIC(&led4_uuid.uuid,
+		BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_NOTIFY,
+		BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
+		read_led4, write_led4, NULL),
+	BT_GATT_CCC(led4_ccc_changed,
+		    BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+);
+
+/* --------------------------------------------------------------------------
  * ATT Read callbacks
  * --------------------------------------------------------------------------
- * Returns the cached LED state (0x00 or 0x01).  The Central can call this
+ * Returns the cached LED state (0x00 or 0x01).  The Central calls this
  * immediately after connecting to sync its UI without writing anything.
  * --------------------------------------------------------------------------
  */
@@ -142,6 +209,10 @@ static ssize_t write_led3(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 			  const void *buf, uint16_t len, uint16_t offset,
 			  uint8_t flags)
 {
+	ARG_UNUSED(conn);
+	ARG_UNUSED(attr);
+	ARG_UNUSED(flags);
+
 	const uint8_t *data = buf;
 
 	if (offset != 0 || len != sizeof(led3_state)) {
@@ -167,7 +238,7 @@ static ssize_t write_led3(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 
 	/* Echo the new state back as a notification so the Central's UI
 	 * reflects the applied value immediately, and any other subscriber
-	 * is also updated.
+	 * is also informed.
 	 */
 	if (atomic_get(&led3_notify_enabled)) {
 		bt_gatt_notify(NULL,
@@ -182,6 +253,10 @@ static ssize_t write_led4(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 			  const void *buf, uint16_t len, uint16_t offset,
 			  uint8_t flags)
 {
+	ARG_UNUSED(conn);
+	ARG_UNUSED(attr);
+	ARG_UNUSED(flags);
+
 	const uint8_t *data = buf;
 
 	if (offset != 0 || len != sizeof(led4_state)) {
@@ -213,40 +288,6 @@ static ssize_t write_led4(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 
 	return (ssize_t)len;
 }
-
-/* --------------------------------------------------------------------------
- * GATT Service definition
- * --------------------------------------------------------------------------
- */
-BT_GATT_SERVICE_DEFINE(led_ctrl_svc,
-	/* Primary Service declaration */
-	BT_GATT_PRIMARY_SERVICE(&led_ctrl_svc_uuid.uuid),
-
-	/* --- LED3 Control Characteristic -----------------------------------
-	 * Properties:
-	 *   BT_GATT_CHRC_READ   — Central may read current LED3 state
-	 *   BT_GATT_CHRC_WRITE  — Central may write 0x00/0x01 to change state
-	 *   BT_GATT_CHRC_NOTIFY — Server pushes state changes to subscribers
-	 *
-	 * BT_GATT_PERM_WRITE: write permitted without link-layer encryption.
-	 * For a production product, use BT_GATT_PERM_WRITE_ENCRYPT to require
-	 * an encrypted/bonded connection before allowing LED control.
-	 */
-	BT_GATT_CHARACTERISTIC(&led3_uuid.uuid,
-		BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_NOTIFY,
-		BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
-		read_led3, write_led3, NULL),
-	BT_GATT_CCC(led3_ccc_changed,
-		    BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-
-	/* --- LED4 Control Characteristic ----------------------------------- */
-	BT_GATT_CHARACTERISTIC(&led4_uuid.uuid,
-		BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_NOTIFY,
-		BT_GATT_PERM_READ | BT_GATT_PERM_WRITE,
-		read_led4, write_led4, NULL),
-	BT_GATT_CCC(led4_ccc_changed,
-		    BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-);
 
 /* --------------------------------------------------------------------------
  * Public notify helper
