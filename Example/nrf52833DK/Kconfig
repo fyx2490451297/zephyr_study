@@ -22,6 +22,7 @@ rsource "app/package_ble_conn/Kconfig"
 rsource "app/package_ble_gatt_service/Kconfig"
 rsource "app/package_ble_gatt_ota_service/Kconfig"
 rsource "app/package_ble_gatt_client/Kconfig"
+rsource "app/package_ble_led_ctrl_service/Kconfig"
 
 # include the default Zephyr configuration (required)
 source "Kconfig.zephyr"

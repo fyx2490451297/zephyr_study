@@ -1,0 +1,29 @@
+config PACKAGE_BLE_LED_CTRL_SERVICE
+	bool "Enable BLE LED control GATT service (LED3 / LED4)"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	depends on PACKAGE_BLE_CORE
+	depends on PACKAGE_BLE_CONN
+	depends on PACKAGE_LED
+	help
+	  Registers a custom GATT service that lets a BLE Central (phone / app)
+	  read and write the state of LED3 and LED4 on the nRF52833DK board.
+	  Each LED has its own characteristic:
+	    Write 0x00 -> LED OFF
+	    Write 0x01 -> LED ON
+	    Read       -> returns current LED state (0x00 or 0x01)
+	    Notify     -> pushes state change to subscribed Centrals
+	  The service depends on package_led (hardware driver) and
+	  package_ble_conn (for connection event callbacks).
+
+if PACKAGE_BLE_LED_CTRL_SERVICE
+
+config PACKAGE_BLE_LED_CTRL_SERVICE_INIT_PRIORITY
+	int "BLE LED control service SYS_INIT priority"
+	default 97
+	help
+	  Must be greater than PACKAGE_BLE_CONN_INIT_PRIORITY (default 93)
+	  and PACKAGE_LED_INIT_PRIORITY (default 90).
+
+endif # PACKAGE_BLE_LED_CTRL_SERVICE
