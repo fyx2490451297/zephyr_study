@@ -1,0 +1,45 @@
+config PACKAGE_GATT_SERVER_DEMO
+	bool "Enable BLE GATT server demo (Peripheral + GATT Server role)"
+	default n
+	depends on BT
+	depends on BT_PERIPHERAL
+	help
+	  Enable a BLE GATT server demo for learning ATT/GATT concepts.
+	  The demo defines a custom 128-bit service with three characteristics
+	  that demonstrate every fundamental ATT operation:
+	    - Firmware Version  (Read-only)
+	    - LED Control       (Read / Write)
+	    - Counter           (Read / Notify — increments every second)
+	  Only one BLE demo should be enabled at a time because each calls
+	  bt_enable(). Disable PACKAGE_BLE_SCAN_CONN_DEMO before enabling this.
+
+if PACKAGE_GATT_SERVER_DEMO
+
+config PACKAGE_GATT_SERVER_DEMO_INIT_PRIORITY
+	int "GATT server demo SYS_INIT priority"
+	default 90
+	help
+	  SYS_INIT priority for this module. Must be >= 90 so it runs after
+	  the Bluetooth controller driver is registered.
+
+config PACKAGE_GATT_SERVER_DEMO_STACK_SIZE
+	int "Notification thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size for the counter notification thread.
+
+config PACKAGE_GATT_SERVER_DEMO_THREAD_PRIORITY
+	int "Notification thread priority"
+	default 7
+	help
+	  Cooperative or preemptive priority of the notification thread.
+	  Must be lower priority (higher number) than the BT RX work queue.
+
+config PACKAGE_GATT_SERVER_DEMO_NOTIFY_INTERVAL_MS
+	int "Counter notification interval (milliseconds)"
+	default 1000
+	help
+	  How often the counter characteristic value is incremented and a
+	  GATT notification is sent to subscribed centrals.
+
+endif # PACKAGE_GATT_SERVER_DEMO
