@@ -49,14 +49,9 @@ Project layout
  ├── package_ble_gatt_service/      # 通用的GATT service
  ├── package_ble_gatt_ota_service/  # OTA GATT Service
  ├── package_ble_gatt_client/       # GATT Client
- ├── package_mcu_transport/         # BLE MCU 物理传输层(UART)
- ├── package_protocol_manager/      # 协议的路由与分发
- ├── package_protocol_parser/       # 协议的解析
- ├── package_protocol_ota/          # OTA 分包/校验/重传
- ├── package_protocol_cmd/          # 控制指令协议
- └── package_ota_manager/           # OTA process manager(IDLE->握手->传输->校验->完成)
+ └── package_mcu_transport/         # BLE MCU 物理传输层(UART)
 
-### BLE MCU protocol design
+### BLE MCU protocol design(Not need to implement in BLE part)
 
 	BLE-->MCU Forward frame
 		[Sync Head 1][Sync Head 2][CMD][SEQ][Length][Payload][CRC-16 MSB][CRC-16 LSB]
