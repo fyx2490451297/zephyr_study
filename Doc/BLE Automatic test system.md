@@ -1,1 +1,0 @@
-# BLE Automatic test system build up
