@@ -13,6 +13,7 @@ rsource "app/package_mcu_transport/Kconfig"
 rsource "app/package_sem/Kconfig"
 rsource "app/package_kmsq/Kconfig"
 rsource "app/package_kmutex/Kconfig"
+rsource "app/package_atomic/Kconfig"
 rsource "app/package_gatt_server_demo/Kconfig"
 
 # BLE OTA production packages

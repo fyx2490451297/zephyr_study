@@ -1,0 +1,35 @@
+config PACKAGE_ATOMIC_DEMO
+	bool "Enable atomic operations learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr atomic (atomic_t) demo.
+	  The demo shows two worker threads updating a shared counter and a
+	  shared bitmask with lock-free atomic operations (atomic_inc,
+	  atomic_dec, atomic_cas, atomic_set_bit/atomic_clear_bit), instead of
+	  guarding the shared state with a mutex or semaphore.
+
+if PACKAGE_ATOMIC_DEMO
+
+config PACKAGE_ATOMIC_DEMO_STACK_SIZE
+	int "Atomic demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both worker threads.
+
+config PACKAGE_ATOMIC_DEMO_INCREMENTER_PRIORITY
+	int "Atomic demo incrementer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the thread that increments the shared
+	  counter and sets bits in the shared bitmask.
+
+config PACKAGE_ATOMIC_DEMO_DECREMENTER_PRIORITY
+	int "Atomic demo decrementer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the thread that decrements the shared
+	  counter and clears bits in the shared bitmask.
+	  Kept equal to the incrementer priority so the scheduler interleaves
+	  both threads, making the lock-free updates race in practice.
+
+endif # PACKAGE_ATOMIC_DEMO
