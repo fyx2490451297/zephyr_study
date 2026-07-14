@@ -1,0 +1,69 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="1TD-q2z86vsqanMUoH3W">
+    <mxGraphModel dx="940" dy="446" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dnoXuYCetGCEworKhkUX-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="BLE DUT" vertex="1">
+          <mxGeometry height="80" width="160" x="320" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="BLE Dongle" vertex="1">
+          <mxGeometry height="120" width="80" x="520" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="RaspberryPi" vertex="1">
+          <mxGeometry height="120" width="80" x="360" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Host PC" vertex="1">
+          <mxGeometry height="120" width="80" x="160" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-6" edge="1" parent="1" source="dnoXuYCetGCEworKhkUX-5" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1.007;exitY=0.545;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.014;entryY=0.55;entryDx=0;entryDy=0;entryPerimeter=0;" target="dnoXuYCetGCEworKhkUX-4" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="410" y="390" as="sourcePoint" />
+            <mxPoint x="510" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-7" connectable="0" parent="dnoXuYCetGCEworKhkUX-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TCP/IP" vertex="1">
+          <mxGeometry relative="1" x="0.055" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-9" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="520" y="259.71" as="sourcePoint" />
+            <mxPoint x="440" y="259.71" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-10" connectable="0" parent="dnoXuYCetGCEworKhkUX-9" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="USB" vertex="1">
+          <mxGeometry relative="1" x="0.1175" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-11" edge="1" parent="1" source="dnoXuYCetGCEworKhkUX-2" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="dnoXuYCetGCEworKhkUX-4" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="410" y="440" as="sourcePoint" />
+            <mxPoint x="510" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-12" connectable="0" parent="dnoXuYCetGCEworKhkUX-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="UART" vertex="1">
+          <mxGeometry relative="1" x="-0.0643" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-16" edge="1" parent="1" source="dnoXuYCetGCEworKhkUX-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="621" y="260" />
+            </Array>
+            <mxPoint x="600" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-14" parent="1" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.wireless_connection;rotation=0;" value="" vertex="1">
+          <mxGeometry height="50" width="42" x="600" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="dnoXuYCetGCEworKhkUX-17" edge="1" parent="1" source="dnoXuYCetGCEworKhkUX-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="dnoXuYCetGCEworKhkUX-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
