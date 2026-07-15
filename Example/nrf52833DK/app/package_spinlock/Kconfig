@@ -1,0 +1,42 @@
+config PACKAGE_SPINLOCK_DEMO
+	bool "Enable spinlock learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr spinlock (struct k_spinlock) demo.
+	  The demo shows two worker threads and a periodic timer ISR all
+	  updating the same shared data structure, protected by a single
+	  spinlock. Unlike a mutex, a spinlock may be safely taken from
+	  interrupt context (ISR), which this demo also exercises.
+
+if PACKAGE_SPINLOCK_DEMO
+
+config PACKAGE_SPINLOCK_DEMO_STACK_SIZE
+	int "Spinlock demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both worker threads.
+
+config PACKAGE_SPINLOCK_DEMO_WRITER_PRIORITY
+	int "Spinlock demo writer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the thread that appends entries to the
+	  shared ring-style log under the spinlock.
+
+config PACKAGE_SPINLOCK_DEMO_READER_PRIORITY
+	int "Spinlock demo reader thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the thread that reads and clears the
+	  shared statistics under the spinlock.
+	  Kept equal to the writer priority so the scheduler interleaves both
+	  threads, making the critical-section protection easy to observe.
+
+config PACKAGE_SPINLOCK_DEMO_INIT_PRIORITY
+	int "Spinlock demo init priority"
+	default 90
+	help
+	  SYS_INIT priority (APPLICATION level) used to start the periodic
+	  timer that drives the ISR-context spinlock updates.
+
+endif # PACKAGE_SPINLOCK_DEMO

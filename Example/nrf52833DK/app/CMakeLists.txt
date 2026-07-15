@@ -9,6 +9,7 @@ add_subdirectory(package_sem)
 add_subdirectory(package_kmsq)
 add_subdirectory(package_kmutex)
 add_subdirectory(package_atomic)
+add_subdirectory(package_spinlock)
 add_subdirectory(package_gatt_server_demo)
 # BLE OTA production packages
 add_subdirectory(package_ble_core)
