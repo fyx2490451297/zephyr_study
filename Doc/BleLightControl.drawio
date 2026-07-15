@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="b7EbouBgGijDl4pJ9YFI">
+    <mxGraphModel dx="940" dy="446" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="05hWdxp_lYUlhYhn-H5--1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="LightControl APP" vertex="1">
+          <mxGeometry height="160" width="120" x="80" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Phone" vertex="1">
+          <mxGeometry height="30" width="60" x="110" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--5" edge="1" parent="1" source="05hWdxp_lYUlhYhn-H5--3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="05hWdxp_lYUlhYhn-H5--4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--13" edge="1" parent="1" source="05hWdxp_lYUlhYhn-H5--3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" target="05hWdxp_lYUlhYhn-H5--8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--14" edge="1" parent="1" source="05hWdxp_lYUlhYhn-H5--3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="05hWdxp_lYUlhYhn-H5--9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--15" edge="1" parent="1" source="05hWdxp_lYUlhYhn-H5--3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" target="05hWdxp_lYUlhYhn-H5--10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="nRF52833DK Kit" vertex="1">
+          <mxGeometry height="80" width="120" x="320" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--6" edge="1" parent="1" source="05hWdxp_lYUlhYhn-H5--4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="05hWdxp_lYUlhYhn-H5--1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--4" parent="1" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.wireless_connection;rotation=-181;" value="" vertex="1">
+          <mxGeometry height="50" width="42" x="240" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--7" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="BLE" vertex="1">
+          <mxGeometry height="30" width="60" x="231" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--8" parent="1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.opto_electronics.lamp" value="LED1" vertex="1">
+          <mxGeometry height="70" width="30" x="520" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--9" parent="1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.opto_electronics.lamp" value="LED2" vertex="1">
+          <mxGeometry height="70" width="30" x="560" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--10" parent="1" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.opto_electronics.lamp" value="LED3" vertex="1">
+          <mxGeometry height="70" width="30" x="600" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="05hWdxp_lYUlhYhn-H5--16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Feature1. Light control&lt;div&gt;Feature2. OTA&lt;/div&gt;&lt;div&gt;......&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="140" x="490" y="440" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
