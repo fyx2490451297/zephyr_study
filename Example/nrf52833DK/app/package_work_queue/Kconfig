@@ -1,0 +1,40 @@
+config PACKAGE_WORK_QUEUE_DEMO
+	bool "Enable work queue learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr work queue demo.
+	  The demo creates a dedicated (custom) workqueue thread, submits a
+	  one-shot k_work item from a trigger thread, and schedules a
+	  self-resubmitting k_work_delayable item to show periodic work.
+
+if PACKAGE_WORK_QUEUE_DEMO
+
+config PACKAGE_WORK_QUEUE_DEMO_STACK_SIZE
+	int "Work queue demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size used by both the dedicated workqueue thread and the
+	  trigger thread.
+
+config PACKAGE_WORK_QUEUE_DEMO_PRIORITY
+	int "Work queue demo dedicated workqueue priority"
+	default 7
+	help
+	  Zephyr thread priority for the dedicated workqueue thread
+	  (lower number = higher priority).
+
+config PACKAGE_WORK_QUEUE_DEMO_TRIGGER_PRIORITY
+	int "Work queue demo trigger thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the thread that periodically submits the
+	  one-shot work item.
+
+config PACKAGE_WORK_QUEUE_DEMO_INIT_PRIORITY
+	int "Work queue demo SYS_INIT priority"
+	default 90
+	help
+	  SYS_INIT priority (APPLICATION level) used to start the dedicated
+	  workqueue thread and the trigger thread during boot.
+
+endif # PACKAGE_WORK_QUEUE_DEMO
