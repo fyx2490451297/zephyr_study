@@ -1,0 +1,32 @@
+config PACKAGE_FIFO_DEMO
+	bool "Enable FIFO learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr k_fifo demo.
+	  The demo shows how a producer thread allocates data items and pushes
+	  them into a FIFO, while a consumer thread waits on the FIFO and pops
+	  the items out in first-in-first-out order.
+
+if PACKAGE_FIFO_DEMO
+
+config PACKAGE_FIFO_DEMO_STACK_SIZE
+	int "FIFO demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by both the consumer and producer threads.
+
+config PACKAGE_FIFO_DEMO_CONSUMER_PRIORITY
+	int "FIFO demo consumer thread priority"
+	default 7
+	help
+	  Zephyr thread priority for the consumer thread (lower number = higher priority).
+
+config PACKAGE_FIFO_DEMO_PRODUCER_PRIORITY
+	int "FIFO demo producer thread priority"
+	default 8
+	help
+	  Zephyr thread priority for the producer thread.
+	  Should be lower priority (higher number) than the consumer so the
+	  consumer is ready to block before the first item arrives.
+
+endif # PACKAGE_FIFO_DEMO
