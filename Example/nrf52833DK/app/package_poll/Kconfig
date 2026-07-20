@@ -1,0 +1,33 @@
+config PACKAGE_POLL_DEMO
+	bool "Enable poll learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr k_poll demo.
+	  The demo shows how a single thread can block on MULTIPLE, DIFFERENT
+	  kernel objects at once (a semaphore and a poll signal) using k_poll(),
+	  and tell which one woke it up.
+
+if PACKAGE_POLL_DEMO
+
+config PACKAGE_POLL_DEMO_STACK_SIZE
+	int "Poll demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by the poller thread and the two source threads.
+
+config PACKAGE_POLL_DEMO_POLLER_PRIORITY
+	int "Poll demo poller thread priority"
+	default 7
+	help
+	  Zephyr thread priority for the poller thread (lower number = higher priority).
+
+config PACKAGE_POLL_DEMO_SOURCE_PRIORITY
+	int "Poll demo source threads priority"
+	default 8
+	help
+	  Zephyr thread priority shared by both the semaphore-giver and the
+	  signal-raiser threads.
+	  Should be lower priority (higher number) than the poller so the
+	  poller is ready to block before the first source fires.
+
+endif # PACKAGE_POLL_DEMO
