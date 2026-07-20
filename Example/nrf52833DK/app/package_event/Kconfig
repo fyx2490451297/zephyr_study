@@ -1,0 +1,32 @@
+config PACKAGE_EVENT_DEMO
+	bool "Enable event learning demo"
+	default y
+	help
+	  Enable a minimal Zephyr k_event demo.
+	  The demo shows how one thread waits on a combination of event bits
+	  while two other threads independently post different bits, so you
+	  can observe both "wait for any" and "wait for all" behavior.
+
+if PACKAGE_EVENT_DEMO
+
+config PACKAGE_EVENT_DEMO_STACK_SIZE
+	int "Event demo thread stack size (bytes)"
+	default 1024
+	help
+	  Stack size shared by the waiter and the two poster threads.
+
+config PACKAGE_EVENT_DEMO_WAITER_PRIORITY
+	int "Event demo waiter thread priority"
+	default 7
+	help
+	  Zephyr thread priority for the waiter thread (lower number = higher priority).
+
+config PACKAGE_EVENT_DEMO_POSTER_PRIORITY
+	int "Event demo poster threads priority"
+	default 8
+	help
+	  Zephyr thread priority shared by both poster threads.
+	  Should be lower priority (higher number) than the waiter so the
+	  waiter is ready to block before the first event is posted.
+
+endif # PACKAGE_EVENT_DEMO
