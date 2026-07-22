@@ -1,7 +1,7 @@
+#include "display.h"
+
 #include <stdio.h>
 
-#include <zephyr/device.h>
-#include <zephyr/drivers/display.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
@@ -10,16 +10,11 @@
 
 LOG_MODULE_REGISTER(lvgl_demo, LOG_LEVEL_INF);
 
-#define LVGL_DEMO_DISPLAY_NODE DT_NODELABEL(ili9341)
-
-#if !DT_NODE_HAS_STATUS(LVGL_DEMO_DISPLAY_NODE, okay)
-#error "package_lvgl_demo requires the ili9341 display node to be enabled in device tree"
-#endif
-
 /* Uptime counter is refreshed once a second regardless of the LVGL tick rate. */
 #define LVGL_DEMO_COUNTER_PERIOD_MS 1000
 
-static const struct device *const display_dev = DEVICE_DT_GET(LVGL_DEMO_DISPLAY_NODE);
+/* Wait step while polling display_is_ready() during boot race. */
+#define LVGL_DEMO_READY_POLL_MS 10
 
 static lv_obj_t *counter_label;
 
@@ -44,16 +39,25 @@ static void lvgl_demo_thread(void *p1, void *p2, void *p3)
 	char text_buf[32];
 	uint32_t uptime_s = 0;
 	int32_t counter_due_ms = 0;
+	int err;
 
-	if (!device_is_ready(display_dev)) {
-		LOG_ERR("Display device not ready");
-		return;
+	/*
+	 * hardware/package_display's SYS_INIT and this thread both start
+	 * around boot time with no ordering guarantee between them, so poll
+	 * readiness instead of assuming the display is already up.
+	 */
+	while (!display_is_ready()) {
+		k_sleep(K_MSEC(LVGL_DEMO_READY_POLL_MS));
 	}
 
 	lvgl_demo_build_ui();
-	display_blanking_off(display_dev);
 
-	LOG_INF("LVGL demo started on %s", display_dev->name);
+	err = display_power_on();
+	if (err != 0) {
+		LOG_ERR("Failed to power on display (%d)", err);
+	}
+
+	LOG_INF("LVGL demo started");
 
 	while (1) {
 		uint32_t lvgl_sleep_ms = lv_timer_handler();

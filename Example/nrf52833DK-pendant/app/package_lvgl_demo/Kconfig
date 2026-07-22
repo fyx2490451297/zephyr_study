@@ -2,7 +2,7 @@ config PACKAGE_LVGL_DEMO
 	bool "Enable LVGL demo application module"
 	default n
 	depends on LVGL
-	depends on DISPLAY
+	depends on PACKAGE_DISPLAY
 	help
 	  Simple LVGL demo that draws a title label and a periodically
 	  updated uptime counter on the ILI9341 display. Used to validate the

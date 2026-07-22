@@ -39,6 +39,15 @@
     zephyr,user {
         rs485-de-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
     };
+
+    /*
+     * Panel-agnostic display selection. Upper layers (hardware/package_display,
+     * LVGL port, UI) must reference this chosen node instead of the ili9341
+     * label directly, so swapping the panel model only touches this overlay.
+     */
+    chosen {
+        zephyr,display = &ili9341;
+    };
 };
 
 &pinctrl {

@@ -1,0 +1,20 @@
+config PACKAGE_DISPLAY
+	bool "Enable display hardware package (zephyr,display chosen)"
+	default n
+	depends on DISPLAY
+	help
+	  Thin wrapper around the devicetree "zephyr,display" chosen node.
+	  This package owns the concrete display IC (ILI9341, ...) so that
+	  upper layers (LVGL port, UI) never need to reference a specific
+	  panel driver or its devicetree node directly.
+
+if PACKAGE_DISPLAY
+
+config PACKAGE_DISPLAY_INIT_PRIORITY
+	int "Display driver init priority"
+	default 90
+	help
+	  Initialization priority for the display package at APPLICATION
+	  level. Must run before any thread that calls display_power_on().
+
+endif # PACKAGE_DISPLAY
