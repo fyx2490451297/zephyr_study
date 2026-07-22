@@ -1,0 +1,53 @@
+config PACKAGE_RS485
+	bool "Enable RS485 hardware package (UART1 + DE/RE direction control)"
+	default n
+	depends on SERIAL
+	depends on UART_INTERRUPT_DRIVEN
+	depends on GPIO
+	help
+	  Enable half-duplex RS485 transport over UART1. This package owns the
+	  UART1 RX/TX FIFOs and drives the external transceiver's DE/RE pin
+	  (rs485-de-gpios under /zephyr,user in device tree) so the driver
+	  output is only enabled while a frame is being transmitted, and the
+	  bus falls back to receive mode the rest of the time.
+
+if PACKAGE_RS485
+
+config PACKAGE_RS485_INIT_PRIORITY
+	int "RS485 driver init priority"
+	default 91
+	help
+	  Initialization priority for the RS485 driver at APPLICATION level.
+
+config PACKAGE_RS485_TX_BUFFER_SIZE
+	int "RS485 TX staging buffer size (bytes)"
+	default 256
+	range 16 2048
+	help
+	  Maximum frame size that can be passed to rs485_send() in one call.
+
+config PACKAGE_RS485_RX_RING_BUFFER_SIZE
+	int "RS485 RX ring buffer size (bytes)"
+	default 256
+	range 64 4096
+	help
+	  Ring buffer size used to cache UART RX bytes before upper-layer
+	  consumption.
+
+config PACKAGE_RS485_RX_THREAD_STACK_SIZE
+	int "RS485 RX thread stack size (bytes)"
+	default 1024
+
+config PACKAGE_RS485_RX_THREAD_PRIORITY
+	int "RS485 RX thread priority"
+	default 7
+
+config PACKAGE_RS485_TX_TIMEOUT_MS
+	int "RS485 TX completion wait timeout (ms)"
+	default 200
+	help
+	  Maximum time rs485_send() waits for the UART shift register to
+	  finish draining before giving up and forcing the transceiver back
+	  to receive mode.
+
+endif # PACKAGE_RS485
