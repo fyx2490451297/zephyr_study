@@ -4,5 +4,9 @@ mainmenu "nrf52833DK project Configuration"
 rsource "hardware/package_led/Kconfig"
 rsource "hardware/package_rs485/Kconfig"
 
+# Application module configurations
+rsource "app/package_lvgl_demo/Kconfig"
+rsource "app/package_rs485_demo/Kconfig"
+
 # include the default Zephyr configuration (required)
 source "Kconfig.zephyr"

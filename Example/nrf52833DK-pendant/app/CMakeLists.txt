@@ -1,2 +1,4 @@
 # App packages related CMakeLists.txt for nrf52833DK
 add_subdirectory(package_main)
+add_subdirectory(package_lvgl_demo)
+add_subdirectory(package_rs485_demo)

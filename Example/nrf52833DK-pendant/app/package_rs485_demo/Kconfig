@@ -1,0 +1,26 @@
+config PACKAGE_RS485_DEMO
+	bool "Enable RS485 demo application module"
+	default n
+	depends on PACKAGE_RS485
+	help
+	  Demo application that periodically transmits a test frame over the
+	  RS485 bus and logs any bytes received back. Used to validate the
+	  UART1 + DE/RE devicetree wiring and the package_rs485 driver.
+
+if PACKAGE_RS485_DEMO
+
+config PACKAGE_RS485_DEMO_STACK_SIZE
+	int "RS485 demo thread stack size (bytes)"
+	default 1024
+
+config PACKAGE_RS485_DEMO_PRIORITY
+	int "RS485 demo thread priority"
+	default 7
+
+config PACKAGE_RS485_DEMO_PERIOD_MS
+	int "RS485 demo send period (ms)"
+	default 1000
+	help
+	  Interval between two consecutive test frame transmissions.
+
+endif # PACKAGE_RS485_DEMO

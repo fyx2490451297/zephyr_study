@@ -1,0 +1,31 @@
+config PACKAGE_LVGL_DEMO
+	bool "Enable LVGL demo application module"
+	default n
+	depends on LVGL
+	depends on DISPLAY
+	help
+	  Simple LVGL demo that draws a title label and a periodically
+	  updated uptime counter on the ILI9341 display. Used to validate the
+	  SPI1 devicetree wiring and the LVGL/display Kconfig configuration.
+
+if PACKAGE_LVGL_DEMO
+
+config PACKAGE_LVGL_DEMO_STACK_SIZE
+	int "LVGL demo thread stack size (bytes)"
+	default 4096
+	help
+	  LVGL rendering needs a sizeable stack for its internal draw buffers
+	  and call chains.
+
+config PACKAGE_LVGL_DEMO_PRIORITY
+	int "LVGL demo thread priority"
+	default 7
+
+config PACKAGE_LVGL_DEMO_REFRESH_MS
+	int "LVGL demo refresh period (ms)"
+	default 30
+	help
+	  Upper bound on how often lv_timer_handler() is invoked from the
+	  demo thread loop.
+
+endif # PACKAGE_LVGL_DEMO
