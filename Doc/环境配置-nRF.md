@@ -35,18 +35,20 @@ source ncs-dev/bin/activate
 pip3 install west
 
 # 2. 初始化 SDK（v3.3.0）
-mkdir ~/ncs
-cd ~/ncs
+mkdir ~/nrf_dev/ncs
+cd ~/nrf_dev/ncs
 west init -m https://github.com/nrfconnect/sdk-nrf --mr v3.3.0
 
 # 3. 拉取所有相关的代码仓库
 west update
 
 # 4. 导出 Zephyr 环境并安装相关的 Python 依赖包
-west zephyr-export
+
 pip3 install -r zephyr/scripts/requirements.txt
 pip3 install -r nrf/scripts/requirements.txt
 pip3 install -r bootloader/mcuboot/scripts/requirements.txt
+
+west zephyr-export
 ```
 
 ---
