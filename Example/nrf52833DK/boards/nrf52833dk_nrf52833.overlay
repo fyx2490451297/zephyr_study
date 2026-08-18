@@ -125,11 +125,6 @@
             height = <240>;
             rotation = <90>;
             pixel-format = <ILI9XXX_PIXEL_FORMAT_RGB565>;
-            /* Previous attempt toggled DISCTRL's SS bit (0xa2), which did
-             * not correct the left-right mirror. Revert SS to its default
-             * and instead toggle the GS (gate/row scan order) bit — this
-             * flips the horizontal axis without touching vertical/rotation. */
-            disctrl = [0a c2 27 04];
         };
     };
 
