@@ -3,6 +3,7 @@ config PACKAGE_MCU_TRANSPORT
 	default n
 	depends on SERIAL
 	depends on UART_INTERRUPT_DRIVEN
+	depends on RING_BUFFER
 	help
 	  Enable UART-based byte-stream transport between BLE side and MCU protocol
 	  stack. This package owns UART RX/TX and provides callback-based RX data

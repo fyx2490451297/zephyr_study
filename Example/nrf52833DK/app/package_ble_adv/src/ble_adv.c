@@ -55,13 +55,15 @@ int ble_adv_start(void)
 	int err;
 
 	/* bt_le_adv_start() arguments:
-	 *   BT_LE_ADV_CONN_FAST_1 — connectable advertising, interval 30–60 ms.
-	 *                           Shorter interval means faster discovery but
-	 *                           higher radio duty cycle and power use.
+	 *   Connectable advertising, interval 30-60 ms (BT_GAP_ADV_FAST_INT_MIN_1
+	 *   / MAX_1). Shorter interval means faster discovery but higher radio
+	 *   duty cycle and power use.
 	 *   ad / ARRAY_SIZE(ad)   — primary advertising payload
 	 *   NULL / 0              — no scan response data
 	 */
-	err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1,
+	err = bt_le_adv_start(BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE,
+					      BT_GAP_ADV_FAST_INT_MIN_1,
+					      BT_GAP_ADV_FAST_INT_MAX_1, NULL),
 			      ad, ARRAY_SIZE(ad),
 			      NULL, 0);
 	if (err) {

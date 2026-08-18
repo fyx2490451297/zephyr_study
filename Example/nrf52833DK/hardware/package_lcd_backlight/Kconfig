@@ -1,0 +1,21 @@
+config PACKAGE_LCD_BACKLIGHT
+	bool "Enable LCD backlight hardware package"
+	default y
+	depends on GPIO
+	help
+	  Enable the LCD backlight GPIO driver package for nRF52833DK.
+	  Provides lcd_backlight_on(), lcd_backlight_off(), lcd_backlight_set()
+	  APIs. The module is auto-initialized via SYS_INIT at APPLICATION level.
+	  The GPIO (P0.31) drives an external MOSFET gate, not the backlight
+	  LEDs directly.
+
+if PACKAGE_LCD_BACKLIGHT
+
+config PACKAGE_LCD_BACKLIGHT_INIT_PRIORITY
+	int "LCD backlight driver initialization priority"
+	default 90
+	help
+	  Initialization priority for the LCD backlight driver within
+	  APPLICATION level.
+
+endif # PACKAGE_LCD_BACKLIGHT

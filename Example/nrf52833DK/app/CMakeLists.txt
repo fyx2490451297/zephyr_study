@@ -15,6 +15,7 @@ add_subdirectory(package_kmutex)
 add_subdirectory(package_atomic)
 add_subdirectory(package_spinlock)
 add_subdirectory(package_gatt_server_demo)
+add_subdirectory(package_lcd_ui)
 # BLE OTA production packages
 add_subdirectory(package_ble_core)
 add_subdirectory(package_ble_adv)

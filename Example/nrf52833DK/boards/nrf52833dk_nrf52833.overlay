@@ -1,5 +1,6 @@
 /* boards/nrf52833dk_nrf52833.overlay */
 #include <zephyr/dt-bindings/pinctrl/nrf-pinctrl.h>
+#include <zephyr/dt-bindings/display/ili9xxx.h>
 / {
     leds {
         compatible = "gpio-leds";
@@ -24,12 +25,31 @@
         };
     };
 
+    /* LCD backlight control, driven through an external MOSFET gate on P0.31.
+     * Reuses the gpio-leds binding since the backlight is a simple on/off
+     * (or PWM-capable) GPIO output, consistent with hardware/package_led. */
+    lcd_backlight_gpio: lcd_backlight_p0_31 {
+        compatible = "gpio-leds";
+        backlight_pin: backlight_p0_31 {
+            gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+            label = "LCD Backlight";
+        };
+    };
+
     aliases {
         led1 = &board_led_1;
         led2 = &board_led_2;
         led3 = &board_led_3;
         led4 = &board_led_4;
+        lcd-backlight = &backlight_pin;
     };
+};
+
+/* spi1 defaults to "okay" on this board and claims SCK=P0.31, which we need
+ * for the LCD backlight control pin. Disable it since this project does not
+ * use spi1, freeing P0.31 for GPIO use. */
+&spi1 {
+    status = "disabled";
 };
 
 &pinctrl {
@@ -47,6 +67,24 @@
             low-power-enable;
         };
     };
+
+    /* spi2 pins for the ILI9341 LCD (unused elsewhere on this board) */
+    spi2_default: spi2_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 0, 3)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 26)>,
+                    <NRF_PSEL(SPIM_MISO, 0, 29)>;
+        };
+    };
+
+    spi2_sleep: spi2_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 0, 3)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 26)>,
+                    <NRF_PSEL(SPIM_MISO, 0, 29)>;
+            low-power-enable;
+        };
+    };
 };
 
 &uart1 {
@@ -55,4 +93,47 @@
     pinctrl-0 = <&uart1_default>;
     pinctrl-1 = <&uart1_sleep>;
     pinctrl-names = "default", "sleep";
+};
+
+/* spi2 carries the ILI9341 LCD. CS(CSX)=P0.27 is a normal SPI chip-select on
+ * the bus itself; DC/RESET are plain GPIOs managed by the mipi-dbi wrapper. */
+&spi2 {
+    status = "okay";
+    cs-gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;
+    pinctrl-0 = <&spi2_default>;
+    pinctrl-1 = <&spi2_sleep>;
+    pinctrl-names = "default", "sleep";
+};
+
+/ {
+    /* ILI9341 LCD over spi2, using the MIPI-DBI (Mode C) abstraction:
+     * DC(DCX)=P0.04, RESET(/RES)=P0.28. IM0/IM1/IM2 are hardwired on the
+     * panel to select 4-wire SPI mode, so no MCU pins are needed for them. */
+    ili9341_mipi_dbi: ili9341_mipi_dbi {
+        compatible = "zephyr,mipi-dbi-spi";
+        spi-dev = <&spi2>;
+        dc-gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&gpio0 28 GPIO_ACTIVE_LOW>;
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        ili9341: ili9341@0 {
+            compatible = "ilitek,ili9341";
+            reg = <0>;
+            mipi-max-frequency = <32000000>;
+            width = <320>;
+            height = <240>;
+            rotation = <90>;
+            pixel-format = <ILI9XXX_PIXEL_FORMAT_RGB565>;
+            /* Previous attempt toggled DISCTRL's SS bit (0xa2), which did
+             * not correct the left-right mirror. Revert SS to its default
+             * and instead toggle the GS (gate/row scan order) bit — this
+             * flips the horizontal axis without touching vertical/rotation. */
+            disctrl = [0a c2 27 04];
+        };
+    };
+
+    chosen {
+        zephyr,display = &ili9341;
+    };
 };

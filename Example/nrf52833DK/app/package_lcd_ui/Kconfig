@@ -1,0 +1,27 @@
+config PACKAGE_LCD_UI
+	bool "Enable LCD LVGL UI application module"
+	default y
+	depends on PACKAGE_LCD_BACKLIGHT
+	depends on DISPLAY
+	depends on LVGL
+	help
+	  Application-level LVGL UI for the ILI9341 LCD (pipe-bender dashboard,
+	  ported from an LVGL v9 PC prototype to LVGL v8 widget/image APIs).
+	  Runs display bring-up and the lv_task_handler() loop in a dedicated
+	  thread. Depends on the LCD backlight hardware package, the display
+	  subsystem, and LVGL.
+
+if PACKAGE_LCD_UI
+
+config PACKAGE_LCD_UI_STACK_SIZE
+	int "LCD UI thread stack size (bytes)"
+	default 4096
+	help
+	  Stack size for the LVGL task handler thread. LVGL widget creation
+	  and rendering needs more stack than typical demo threads.
+
+config PACKAGE_LCD_UI_PRIORITY
+	int "LCD UI thread priority"
+	default 7
+
+endif # PACKAGE_LCD_UI
