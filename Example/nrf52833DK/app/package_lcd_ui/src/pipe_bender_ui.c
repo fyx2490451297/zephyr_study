@@ -68,6 +68,34 @@ static void live_angle_update_label(void)
     lv_label_set_text(s_val_live, buf);
 }
 
+/* --- Bluetooth / link status icon breathing animation ---
+ * Fades the icon's text opacity up and down forever to give a "breathing
+ * LED" look. Both status icons share the same blue tint and timing. */
+#define ICON_BREATH_COLOR       0x2E9EFF /* blue */
+#define ICON_BREATH_TIME_MS     1200     /* fade-in/out duration each way */
+#define ICON_BREATH_OPA_MIN     LV_OPA_30
+
+static void icon_breath_anim_cb(void *obj, int32_t v)
+{
+    lv_obj_set_style_text_opa((lv_obj_t *)obj, (lv_opa_t)v, 0);
+}
+
+static void icon_start_breath_anim(lv_obj_t *icon)
+{
+    lv_obj_set_style_text_color(icon, lv_color_hex(ICON_BREATH_COLOR), 0);
+
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, icon);
+    lv_anim_set_exec_cb(&a, icon_breath_anim_cb);
+    lv_anim_set_values(&a, ICON_BREATH_OPA_MIN, LV_OPA_COVER);
+    lv_anim_set_time(&a, ICON_BREATH_TIME_MS);
+    lv_anim_set_playback_time(&a, ICON_BREATH_TIME_MS);
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
+    lv_anim_start(&a);
+}
+
 /* Advances the auto-demo one tick: bounces the target angle between 0 and
  * 180 degrees, then lets the live angle chase it with an exponential
  * catch-up (lag), similar to how a real motor angle would approach a
@@ -118,8 +146,8 @@ void pipe_bender_ui_create(void)
     lv_obj_t *ic_wifi = lv_label_create(sb);
     lv_label_set_text(ic_wifi, ICON_SIGNAL);
     lv_obj_align(ic_wifi, LV_ALIGN_LEFT_MID, 4, 0);
-    lv_obj_set_style_text_color(ic_wifi, lv_color_hex(0xFFFFFF), 0);
     lv_obj_set_style_text_font(ic_wifi, &font_icons_16, 0);
+    icon_start_breath_anim(ic_wifi); /* blue breathing effect */
     /* Note: LVGL v8 only supports uniform transform_zoom (no x-only scale
      * like v9's transform_scale_x), so the ~1.15x horizontal stretch from
      * the original UI is intentionally dropped here. */
@@ -128,8 +156,8 @@ void pipe_bender_ui_create(void)
     lv_obj_t *ic_link = lv_label_create(sb);
     lv_label_set_text(ic_link, ICON_CONNECT);
     lv_obj_align(ic_link, LV_ALIGN_LEFT_MID, 33, 0);
-    lv_obj_set_style_text_color(ic_link, lv_color_hex(0xFFFFFF), 0);
     lv_obj_set_style_text_font(ic_link, &font_icons_16, 0);
+    icon_start_breath_anim(ic_link); /* blue breathing effect */
 
     /* Gauge 1 */
     lv_obj_t *ang1_img = lv_img_create(sb);
