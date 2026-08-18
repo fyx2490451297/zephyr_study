@@ -4,6 +4,7 @@
 
 #include <math.h>
 #include <lvgl.h>
+#include <zephyr/toolchain.h>
 
 /* Target angle state: clamped to [0, 180] degrees */
 static float s_target_angle = 0.0f;
@@ -11,6 +12,21 @@ static const float TARGET_ANGLE_STEP = 0.5f;   /* both short-click step and per-
 static const float TARGET_ANGLE_MIN = 0.0f;
 static const float TARGET_ANGLE_MAX = 180.0f;
 static const float TARGET_ANGLE_RANGE = 180.0f; /* TARGET_ANGLE_MAX - TARGET_ANGLE_MIN */
+
+/* --- Live-usage simulation demo ---
+ * Periodically sweeps the target angle back and forth across [0, 180] and
+ * drives the live angle toward it with a lag, mimicking a real motor/sensor
+ * closing the gap on a moving target. Purely cosmetic; no real hardware
+ * feedback is involved. */
+static lv_obj_t *s_val_live;
+static lv_obj_t *s_val_tgt;
+static float s_live_angle = 0.0f;
+static int8_t s_demo_dir = 1; /* +1 sweeping up, -1 sweeping down */
+static lv_timer_t *s_demo_timer;
+
+#define DEMO_TIMER_PERIOD_MS   50
+#define DEMO_TARGET_STEP_DEG   1.0f   /* target sweep speed: ~20 deg/s */
+#define DEMO_LIVE_LERP         0.12f  /* live angle catch-up rate per tick */
 
 static void target_angle_update_label(lv_obj_t *val_tgt)
 {
@@ -43,6 +59,41 @@ static void target_angle_minus_cb(lv_event_t *e)
 {
     lv_obj_t *val_tgt = (lv_obj_t *)lv_event_get_user_data(e);
     target_angle_step(val_tgt, -TARGET_ANGLE_STEP);
+}
+
+static void live_angle_update_label(void)
+{
+    char buf[16];
+    lv_snprintf(buf, sizeof(buf), "%.1f\xc2\xb0", (double)s_live_angle);
+    lv_label_set_text(s_val_live, buf);
+}
+
+/* Advances the auto-demo one tick: bounces the target angle between 0 and
+ * 180 degrees, then lets the live angle chase it with an exponential
+ * catch-up (lag), similar to how a real motor angle would approach a
+ * moving setpoint. */
+static void demo_sim_timer_cb(lv_timer_t *timer)
+{
+    ARG_UNUSED(timer);
+
+    s_target_angle += s_demo_dir * DEMO_TARGET_STEP_DEG;
+    if (s_target_angle >= TARGET_ANGLE_MAX) {
+        s_target_angle = TARGET_ANGLE_MAX;
+        s_demo_dir = -1;
+    } else if (s_target_angle <= TARGET_ANGLE_MIN) {
+        s_target_angle = TARGET_ANGLE_MIN;
+        s_demo_dir = 1;
+    }
+
+    s_live_angle += (s_target_angle - s_live_angle) * DEMO_LIVE_LERP;
+    if (s_live_angle < TARGET_ANGLE_MIN) {
+        s_live_angle = TARGET_ANGLE_MIN;
+    } else if (s_live_angle > TARGET_ANGLE_MAX) {
+        s_live_angle = TARGET_ANGLE_MAX;
+    }
+
+    target_angle_update_label(s_val_tgt);
+    live_angle_update_label();
 }
 
 void pipe_bender_ui_create(void)
@@ -131,11 +182,11 @@ void pipe_bender_ui_create(void)
     lv_obj_set_style_pad_all(box_live, 0, 0);
     lv_obj_clear_flag(box_live, LV_OBJ_FLAG_SCROLLABLE);
 
-    lv_obj_t *val_live = lv_label_create(box_live);
-    lv_label_set_text(val_live, "0.0\xc2\xb0");
-    lv_obj_center(val_live);
-    lv_obj_set_style_text_color(val_live, lv_color_hex(0xCCCCCC), 0);
-    lv_obj_set_style_text_font(val_live, &lv_font_montserrat_26, 0);
+    s_val_live = lv_label_create(box_live);
+    lv_label_set_text(s_val_live, "0.0\xc2\xb0");
+    lv_obj_center(s_val_live);
+    lv_obj_set_style_text_color(s_val_live, lv_color_hex(0xCCCCCC), 0);
+    lv_obj_set_style_text_font(s_val_live, &lv_font_montserrat_26, 0);
 
     /* TARGET ANGLE box */
     lv_obj_t *box_tgt = lv_obj_create(scr);
@@ -152,6 +203,7 @@ void pipe_bender_ui_create(void)
     lv_obj_align(val_tgt, LV_ALIGN_CENTER, 16, 0);
     lv_obj_set_style_text_color(val_tgt, lv_color_hex(0xF0F0F0), 0);
     lv_obj_set_style_text_font(val_tgt, &lv_font_montserrat_26, 0);
+    s_val_tgt = val_tgt;
     target_angle_update_label(val_tgt); /* sync label with initial s_target_angle */
 
     lv_obj_t *pm_box = lv_obj_create(box_tgt);
@@ -257,4 +309,16 @@ void pipe_bender_ui_create(void)
     lv_label_set_text(lbl_home, LV_SYMBOL_HOME " HOME");
     lv_obj_center(lbl_home);
     lv_obj_set_style_text_font(lbl_home, &lv_font_montserrat_14, 0);
+
+    /* Start the live/target angle auto-demo. Guard against a stale timer if
+     * this screen is ever rebuilt (e.g. re-entering the pipe-bender view). */
+    if (s_demo_timer != NULL) {
+        lv_timer_del(s_demo_timer);
+    }
+    s_target_angle = TARGET_ANGLE_MIN;
+    s_live_angle = TARGET_ANGLE_MIN;
+    s_demo_dir = 1;
+    target_angle_update_label(s_val_tgt);
+    live_angle_update_label();
+    s_demo_timer = lv_timer_create(demo_sim_timer_cb, DEMO_TIMER_PERIOD_MS, NULL);
 }
