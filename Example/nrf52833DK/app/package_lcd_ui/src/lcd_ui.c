@@ -28,7 +28,7 @@ static const struct device *const display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_d
  * toggling both MX and MY (row/column address order): MV|MY|BGR = 0xA8.
  */
 #define ILI9341_MADCTL_CMD   0x36U
-#define ILI9341_MADCTL_FIXED 0xA8U
+#define ILI9341_MADCTL_FIXED 0x68U
 
 static void lcd_ui_fix_mirrored_madctl(void)
 {
