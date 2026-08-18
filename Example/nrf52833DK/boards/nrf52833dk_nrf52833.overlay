@@ -125,6 +125,12 @@
             height = <240>;
             rotation = <90>;
             pixel-format = <ILI9XXX_PIXEL_FORMAT_RGB565>;
+
+            /* This panel reports colors inverted (dark UI backgrounds show
+             * as white with black text, and greens shift toward purple)
+             * unless the controller's display inversion (INVON, 0x21) is
+             * enabled. */
+            display-inversion;
         };
     };
 
