@@ -1,0 +1,25 @@
+config PACKAGE_SYS_MONITOR
+	bool "Enable serial FPS/CPU/RAM system monitor module"
+	default y
+	depends on LVGL
+	select SCHED_THREAD_USAGE_ALL
+	help
+	  Periodically logs the LVGL screen FPS, overall CPU load, and LVGL
+	  heap RAM usage over the console UART, for runtime performance
+	  monitoring of the pipe-bender LCD UI.
+
+if PACKAGE_SYS_MONITOR
+
+config PACKAGE_SYS_MONITOR_STACK_SIZE
+	int "System monitor thread stack size (bytes)"
+	default 1024
+
+config PACKAGE_SYS_MONITOR_PRIORITY
+	int "System monitor thread priority"
+	default 10
+
+config PACKAGE_SYS_MONITOR_PERIOD_MS
+	int "Reporting period (milliseconds)"
+	default 1000
+
+endif # PACKAGE_SYS_MONITOR
