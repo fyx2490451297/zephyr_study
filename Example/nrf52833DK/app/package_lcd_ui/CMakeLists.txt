@@ -16,5 +16,6 @@ if(CONFIG_PACKAGE_LCD_UI)
         src/img_assets/battery_discharging_90p_100p.c
         src/fonts/font_awesome_12.c
         src/fonts/font_icons_16.c
+        src/fonts/font_bend_bold_italic_14.c
     )
 endif()

@@ -20,6 +20,8 @@ static const float TARGET_ANGLE_RANGE = 180.0f; /* TARGET_ANGLE_MAX - TARGET_ANG
  * feedback is involved. */
 static lv_obj_t *s_val_live;
 static lv_obj_t *s_val_tgt;
+static lv_obj_t *s_val_live_bold; /* faux-bold overlay for the live angle value */
+static lv_obj_t *s_val_tgt_bold;  /* faux-bold overlay for the target angle value */
 static float s_live_angle = 0.0f;
 static int8_t s_demo_dir = 1; /* +1 sweeping up, -1 sweeping down */
 static lv_timer_t *s_demo_timer;
@@ -28,11 +30,46 @@ static lv_timer_t *s_demo_timer;
 #define DEMO_TARGET_STEP_DEG   1.0f   /* target sweep speed: ~20 deg/s */
 #define DEMO_LIVE_LERP         0.12f  /* live angle catch-up rate per tick */
 
+/* --- Faux bold text styling ---
+ * LVGL v8's built-in fonts ship a single (regular) weight only, so there is
+ * no font-weight style property to flip. Bold is approximated with the
+ * classic "1px-offset duplicate" trick: a second label with identical
+ * text/color/font is stacked 1px to the right of the original, thickening
+ * every glyph.
+ *
+ * The BEND button is the one exception: it needs to be BOTH bold and
+ * italic, and LVGL's generic widget rotation transform
+ * (LV_STYLE_TRANSFORM_ANGLE) turned out to be unreliable on this display's
+ * small partial render buffer — it intermittently failed to allocate its
+ * offscreen transform layer, making the BEND text vanish entirely. Instead
+ * BEND uses a real bold-italic bitmap font (font_bend_bold_italic_14,
+ * generated from LiberationSans-BoldItalic.ttf) so no runtime transform is
+ * needed at all. */
+static lv_obj_t *label_make_bold(lv_obj_t *label)
+{
+    lv_obj_t *ghost = lv_label_create(lv_obj_get_parent(label));
+    lv_label_set_text(ghost, lv_label_get_text(label));
+    lv_obj_set_style_text_font(ghost, lv_obj_get_style_text_font(label, LV_PART_MAIN), 0);
+    lv_obj_set_style_text_color(ghost, lv_obj_get_style_text_color(label, LV_PART_MAIN), 0);
+    lv_obj_set_style_text_align(ghost, lv_obj_get_style_text_align(label, LV_PART_MAIN), 0);
+    /* Match the original's box size/wrap mode too, otherwise a fixed-width
+     * wrapping label (e.g. the tip text) re-wraps differently at its
+     * default auto-size and shows up as a visible extra line underneath. */
+    lv_label_set_long_mode(ghost, lv_label_get_long_mode(label));
+    lv_obj_set_size(ghost, lv_obj_get_width(label), lv_obj_get_height(label));
+    lv_obj_clear_flag(ghost, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_align_to(ghost, label, LV_ALIGN_TOP_LEFT, 1, 0);
+    return ghost;
+}
+
 static void target_angle_update_label(lv_obj_t *val_tgt)
 {
     char buf[16];
     lv_snprintf(buf, sizeof(buf), "%.1f\xc2\xb0", (double)s_target_angle);
     lv_label_set_text(val_tgt, buf);
+    if (s_val_tgt_bold != NULL) {
+        lv_label_set_text(s_val_tgt_bold, buf);
+    }
 }
 
 /* Adds delta to the target angle, wrapping around at the 0/180 boundary
@@ -66,6 +103,9 @@ static void live_angle_update_label(void)
     char buf[16];
     lv_snprintf(buf, sizeof(buf), "%.1f\xc2\xb0", (double)s_live_angle);
     lv_label_set_text(s_val_live, buf);
+    if (s_val_live_bold != NULL) {
+        lv_label_set_text(s_val_live_bold, buf);
+    }
 }
 
 /* --- Bluetooth / link status icon breathing animation ---
@@ -126,17 +166,34 @@ static void demo_sim_timer_cb(lv_timer_t *timer)
 
 void pipe_bender_ui_create(void)
 {
+    /* Reset any stale bold-overlay pointers from a previous create() call
+     * before wiring up the fresh ones below. */
+    s_val_live_bold = NULL;
+    s_val_tgt_bold = NULL;
+
     /* Screen: logical 320x240 (landscape), very dark background */
     lv_obj_t *scr = lv_scr_act();
     lv_obj_set_style_bg_color(scr, lv_color_hex(0x0D0D0D), 0);
     lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
     lv_obj_set_style_pad_all(scr, 0, 0);
 
-    /* Status bar: 320x30, y=0 */
+    /* Status bar background: 320x30 gray panel, moved to the bottom of the screen */
+    lv_obj_t *sb_bg = lv_obj_create(scr);
+    lv_obj_set_size(sb_bg, 320, 30);
+    lv_obj_set_pos(sb_bg, 0, 210);
+    lv_obj_set_style_bg_color(sb_bg, lv_color_hex(0x111111), 0);
+    lv_obj_set_style_border_width(sb_bg, 0, 0);
+    lv_obj_set_style_pad_all(sb_bg, 0, 0);
+    lv_obj_set_style_radius(sb_bg, 0, 0);
+    lv_obj_clear_flag(sb_bg, LV_OBJ_FLAG_SCROLLABLE);
+
+    /* Status icon row: transparent container kept at the top (y=0) so the
+     * wifi/link/gauge/battery icons stay in place independent of where the
+     * gray background panel is. */
     lv_obj_t *sb = lv_obj_create(scr);
     lv_obj_set_size(sb, 320, 30);
     lv_obj_set_pos(sb, 0, 0);
-    lv_obj_set_style_bg_color(sb, lv_color_hex(0x111111), 0);
+    lv_obj_set_style_bg_opa(sb, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(sb, 0, 0);
     lv_obj_set_style_pad_all(sb, 0, 0);
     lv_obj_set_style_radius(sb, 0, 0);
@@ -179,10 +236,10 @@ void pipe_bender_ui_create(void)
     lv_img_set_zoom(bat2_img, 171);
     lv_obj_align(bat2_img, LV_ALIGN_LEFT_MID, 121, -7);
 
-    /* Separator line */
+    /* Separator line: sits just above the status bar now that it's at the bottom */
     lv_obj_t *sep = lv_obj_create(scr);
     lv_obj_set_size(sep, 320, 1);
-    lv_obj_set_pos(sep, 0, 30);
+    lv_obj_set_pos(sep, 0, 209);
     lv_obj_set_style_bg_color(sep, lv_color_hex(0x2A2A2A), 0);
     lv_obj_set_style_border_width(sep, 0, 0);
     lv_obj_set_style_radius(sep, 0, 0);
@@ -190,20 +247,22 @@ void pipe_bender_ui_create(void)
     /* Column headers */
     lv_obj_t *lbl_live = lv_label_create(scr);
     lv_label_set_text(lbl_live, "LIVE ANGLE");
-    lv_obj_set_pos(lbl_live, 10, 38);
+    lv_obj_set_pos(lbl_live, 10, 34);
     lv_obj_set_style_text_color(lbl_live, lv_color_hex(0xE8E8E8), 0);
     lv_obj_set_style_text_font(lbl_live, &lv_font_montserrat_14, 0);
+    label_make_bold(lbl_live);
 
     lv_obj_t *lbl_tgt = lv_label_create(scr);
     lv_label_set_text(lbl_tgt, "TARGET ANGLE");
-    lv_obj_set_pos(lbl_tgt, 170, 38);
+    lv_obj_set_pos(lbl_tgt, 170, 34);
     lv_obj_set_style_text_color(lbl_tgt, lv_color_hex(0xE8E8E8), 0);
     lv_obj_set_style_text_font(lbl_tgt, &lv_font_montserrat_14, 0);
+    label_make_bold(lbl_tgt);
 
     /* LIVE ANGLE box */
     lv_obj_t *box_live = lv_obj_create(scr);
     lv_obj_set_size(box_live, 148, 68);
-    lv_obj_set_pos(box_live, 8, 56);
+    lv_obj_set_pos(box_live, 8, 50);
     lv_obj_set_style_radius(box_live, 10, 0);
     lv_obj_set_style_bg_color(box_live, lv_color_hex(0x1C1C1E), 0);
     lv_obj_set_style_border_width(box_live, 0, 0);
@@ -215,11 +274,12 @@ void pipe_bender_ui_create(void)
     lv_obj_center(s_val_live);
     lv_obj_set_style_text_color(s_val_live, lv_color_hex(0xCCCCCC), 0);
     lv_obj_set_style_text_font(s_val_live, &lv_font_montserrat_26, 0);
+    s_val_live_bold = label_make_bold(s_val_live);
 
     /* TARGET ANGLE box */
     lv_obj_t *box_tgt = lv_obj_create(scr);
     lv_obj_set_size(box_tgt, 148, 68);
-    lv_obj_set_pos(box_tgt, 164, 56);
+    lv_obj_set_pos(box_tgt, 164, 50);
     lv_obj_set_style_radius(box_tgt, 10, 0);
     lv_obj_set_style_bg_color(box_tgt, lv_color_hex(0x1C1C1E), 0);
     lv_obj_set_style_border_width(box_tgt, 0, 0);
@@ -233,6 +293,7 @@ void pipe_bender_ui_create(void)
     lv_obj_set_style_text_font(val_tgt, &lv_font_montserrat_26, 0);
     s_val_tgt = val_tgt;
     target_angle_update_label(val_tgt); /* sync label with initial s_target_angle */
+    s_val_tgt_bold = label_make_bold(val_tgt);
 
     lv_obj_t *pm_box = lv_obj_create(box_tgt);
     lv_obj_set_size(pm_box, 24, 50);
@@ -262,6 +323,7 @@ void pipe_bender_ui_create(void)
     lv_obj_set_style_text_color(lbl_plus, lv_color_hex(0xEEEEEE), 0);
     lv_obj_set_style_text_font(lbl_plus, &lv_font_montserrat_14, 0);
     lv_obj_clear_flag(lbl_plus, LV_OBJ_FLAG_CLICKABLE); /* let clicks pass through to btn_plus */
+    label_make_bold(lbl_plus);
 
     /* '-' button: bottom half of pm_box, clickable, decrements target angle */
     lv_obj_t *btn_minus = lv_obj_create(pm_box);
@@ -282,11 +344,12 @@ void pipe_bender_ui_create(void)
     lv_obj_set_style_text_color(lbl_minus, lv_color_hex(0xEEEEEE), 0);
     lv_obj_set_style_text_font(lbl_minus, &lv_font_montserrat_14, 0);
     lv_obj_clear_flag(lbl_minus, LV_OBJ_FLAG_CLICKABLE); /* let clicks pass through to btn_minus */
+    label_make_bold(lbl_minus);
 
     /* Navigation row */
     lv_obj_t *btn_l = lv_btn_create(scr);
     lv_obj_set_size(btn_l, 36, 30);
-    lv_obj_set_pos(btn_l, 8, 134);
+    lv_obj_set_pos(btn_l, 8, 126);
     lv_obj_set_style_radius(btn_l, 6, 0);
     lv_obj_set_style_bg_color(btn_l, lv_color_hex(0x1B7A3E), 0);
     lv_obj_set_style_pad_all(btn_l, 0, 0);
@@ -294,21 +357,22 @@ void pipe_bender_ui_create(void)
     lv_label_set_text(lbl_l, LV_SYMBOL_LEFT);
     lv_obj_center(lbl_l);
     lv_obj_set_style_text_font(lbl_l, &lv_font_montserrat_14, 0);
+    label_make_bold(lbl_l);
 
     lv_obj_t *btn_bend = lv_btn_create(scr);
     lv_obj_set_size(btn_bend, 100, 30);
-    lv_obj_set_pos(btn_bend, 110, 134);
+    lv_obj_set_pos(btn_bend, 110, 126);
     lv_obj_set_style_radius(btn_bend, 15, 0);
     lv_obj_set_style_bg_color(btn_bend, lv_color_hex(0x1B7A3E), 0);
     lv_obj_set_style_pad_all(btn_bend, 0, 0);
     lv_obj_t *lbl_bend = lv_label_create(btn_bend);
     lv_label_set_text(lbl_bend, "BEND");
     lv_obj_center(lbl_bend);
-    lv_obj_set_style_text_font(lbl_bend, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(lbl_bend, &font_bend_bold_italic_14, 0); /* real bold-italic glyphs */
 
     lv_obj_t *btn_r = lv_btn_create(scr);
     lv_obj_set_size(btn_r, 36, 30);
-    lv_obj_set_pos(btn_r, 276, 134);
+    lv_obj_set_pos(btn_r, 276, 126);
     lv_obj_set_style_radius(btn_r, 6, 0);
     lv_obj_set_style_bg_color(btn_r, lv_color_hex(0x3A3A3C), 0);
     lv_obj_set_style_pad_all(btn_r, 0, 0);
@@ -316,20 +380,23 @@ void pipe_bender_ui_create(void)
     lv_label_set_text(lbl_r, LV_SYMBOL_RIGHT);
     lv_obj_center(lbl_r);
     lv_obj_set_style_text_font(lbl_r, &lv_font_montserrat_14, 0);
+    label_make_bold(lbl_r);
 
     /* Tip text */
     lv_obj_t *tip = lv_label_create(scr);
     lv_label_set_text(tip, "Press BEND to snug pipe");
-    lv_obj_set_pos(tip, 0, 174);
+    lv_obj_set_pos(tip, 0, 170);
     lv_obj_set_size(tip, 320, 20);
     lv_obj_set_style_text_align(tip, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_color(tip, lv_color_hex(0x808080), 0);
     lv_obj_set_style_text_font(tip, &lv_font_montserrat_12, 0);
+    label_make_bold(tip);
 
-    /* HOME button */
-    lv_obj_t *btn_home = lv_btn_create(scr);
-    lv_obj_set_size(btn_home, 100, 26);
-    lv_obj_set_pos(btn_home, 110, 198);
+    /* HOME button: lives inside the bottom gray status bar (sb_bg) instead
+     * of the main content area, centered in its 30px height. */
+    lv_obj_t *btn_home = lv_btn_create(sb_bg);
+    lv_obj_set_size(btn_home, 100, 24);
+    lv_obj_align(btn_home, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_style_radius(btn_home, 6, 0);
     lv_obj_set_style_bg_color(btn_home, lv_color_hex(0x3A3A3C), 0);
     lv_obj_set_style_pad_all(btn_home, 0, 0);
@@ -337,6 +404,7 @@ void pipe_bender_ui_create(void)
     lv_label_set_text(lbl_home, LV_SYMBOL_HOME " HOME");
     lv_obj_center(lbl_home);
     lv_obj_set_style_text_font(lbl_home, &lv_font_montserrat_14, 0);
+    label_make_bold(lbl_home);
 
     /* Start the live/target angle auto-demo. Guard against a stale timer if
      * this screen is ever rebuilt (e.g. re-entering the pipe-bender view). */
