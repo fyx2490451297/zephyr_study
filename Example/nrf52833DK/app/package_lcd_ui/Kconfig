@@ -24,4 +24,17 @@ config PACKAGE_LCD_UI_PRIORITY
 	int "LCD UI thread priority"
 	default 7
 
+config PACKAGE_LCD_UI_ASYNC_FLUSH
+	bool "Use non-blocking (EasyDMA async) SPI flush for the LCD"
+	default y
+	depends on SPI_ASYNC
+	help
+	  Bypass the blocking spi_write() calls made internally by the
+	  in-tree mipi_dbi_spi / ILI9341 display drivers when pushing pixel
+	  data, and instead drive the SPI bus directly with
+	  spi_transceive_cb() against the nRF52833 SPIM/EasyDMA peripheral.
+	  lv_disp_flush_ready() is signalled from the SPI completion
+	  callback, so the LCD UI thread issues the pixel DMA transfer and
+	  returns immediately instead of blocking on it.
+
 endif # PACKAGE_LCD_UI

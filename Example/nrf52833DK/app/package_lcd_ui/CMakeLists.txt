@@ -18,4 +18,7 @@ if(CONFIG_PACKAGE_LCD_UI)
         src/fonts/font_icons_16.c
         src/fonts/font_bend_bold_italic_14.c
     )
+    if(CONFIG_PACKAGE_LCD_UI_ASYNC_FLUSH)
+        target_sources(app PRIVATE src/lcd_async_flush.c)
+    endif()
 endif()

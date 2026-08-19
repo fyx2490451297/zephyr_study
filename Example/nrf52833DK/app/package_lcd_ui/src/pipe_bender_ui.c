@@ -199,10 +199,29 @@ void pipe_bender_ui_create(void)
     lv_obj_set_style_radius(sb, 0, 0);
     lv_obj_clear_flag(sb, LV_OBJ_FLAG_SCROLLABLE);
 
+    /* Status icon row layout: icons 1/2/3/5 are all boxed at 24x18px so the
+     * horizontal gaps below line up edge-to-edge:
+     *   1-2 gap = 10px, 2-3 gap = 10px, 3-4 gap = 5px, 4-5 gap = 10px, 5-6 gap = 5px
+     * Icon 1/2 boxes are forced to 24x18 (their 20x20 glyph still renders at
+     * native size since LVGL v8 has no anisotropic scaling); gauges 3/5 keep
+     * their native 24x18 size unchanged. */
+#define ICON1_X   4
+#define ICON1_W   24
+#define ICON2_X   (ICON1_X + ICON1_W + 10)
+#define ICON2_W   24
+#define ICON3_X   (ICON2_X + ICON2_W + 10)
+#define ICON3_W   24
+#define ICON4_X   (ICON3_X + ICON3_W + 5)
+#define ICON4_W   15
+#define ICON5_X   (ICON4_X + ICON4_W + 10)
+#define ICON5_W   24
+#define ICON6_X   (ICON5_X + ICON5_W + 5)
+
     /* Icon 1: signalLED */
     lv_obj_t *ic_wifi = lv_label_create(sb);
     lv_label_set_text(ic_wifi, ICON_SIGNAL);
-    lv_obj_align(ic_wifi, LV_ALIGN_LEFT_MID, 4, 0);
+    lv_obj_set_size(ic_wifi, ICON1_W, 18);
+    lv_obj_align(ic_wifi, LV_ALIGN_LEFT_MID, ICON1_X, 0);
     lv_obj_set_style_text_font(ic_wifi, &font_icons_16, 0);
     icon_start_breath_anim(ic_wifi); /* blue breathing effect */
     /* Note: LVGL v8 only supports uniform transform_zoom (no x-only scale
@@ -212,29 +231,42 @@ void pipe_bender_ui_create(void)
     /* Icon 2: connectLED */
     lv_obj_t *ic_link = lv_label_create(sb);
     lv_label_set_text(ic_link, ICON_CONNECT);
-    lv_obj_align(ic_link, LV_ALIGN_LEFT_MID, 33, 0);
+    lv_obj_set_size(ic_link, ICON2_W, 18);
+    lv_obj_align(ic_link, LV_ALIGN_LEFT_MID, ICON2_X, 0);
     lv_obj_set_style_text_font(ic_link, &font_icons_16, 0);
     icon_start_breath_anim(ic_link); /* blue breathing effect */
 
     /* Gauge 1 */
     lv_obj_t *ang1_img = lv_img_create(sb);
     lv_img_set_src(ang1_img, &angle_gauge_icon);
-    lv_obj_align(ang1_img, LV_ALIGN_LEFT_MID, 62, 0);
+    lv_obj_align(ang1_img, LV_ALIGN_LEFT_MID, ICON3_X, 0);
 
     lv_obj_t *bat1_img = lv_img_create(sb);
     lv_img_set_src(bat1_img, &battery_discharging_90p_100p);
     lv_img_set_zoom(bat1_img, 171); /* 2/3x: 22->15px wide, 15->10px tall */
-    lv_obj_align(bat1_img, LV_ALIGN_LEFT_MID, 81, -7);
+    lv_obj_align(bat1_img, LV_ALIGN_LEFT_MID, ICON4_X, -7);
 
     /* Gauge 2 */
     lv_obj_t *ang2_img = lv_img_create(sb);
     lv_img_set_src(ang2_img, &angle_gauge_icon);
-    lv_obj_align(ang2_img, LV_ALIGN_LEFT_MID, 102, 0);
+    lv_obj_align(ang2_img, LV_ALIGN_LEFT_MID, ICON5_X, 0);
 
     lv_obj_t *bat2_img = lv_img_create(sb);
     lv_img_set_src(bat2_img, &battery_discharging_0p_10p);
     lv_img_set_zoom(bat2_img, 171);
-    lv_obj_align(bat2_img, LV_ALIGN_LEFT_MID, 121, -7);
+    lv_obj_align(bat2_img, LV_ALIGN_LEFT_MID, ICON6_X, -7);
+
+#undef ICON1_X
+#undef ICON1_W
+#undef ICON2_X
+#undef ICON2_W
+#undef ICON3_X
+#undef ICON3_W
+#undef ICON4_X
+#undef ICON4_W
+#undef ICON5_X
+#undef ICON5_W
+#undef ICON6_X
 
     /* Separator line: sits just above the status bar now that it's at the bottom */
     lv_obj_t *sep = lv_obj_create(scr);

@@ -1,5 +1,8 @@
 #include "pipe_bender_ui.h"
 #include "lcd_backlight.h"
+#if defined(CONFIG_PACKAGE_LCD_UI_ASYNC_FLUSH)
+#include "lcd_async_flush.h"
+#endif
 
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
@@ -68,11 +71,25 @@ static void lcd_ui_thread(void *p1, void *p2, void *p3)
      * drawn, so nothing gets rendered with the wrong MADCTL setting. */
     lcd_ui_fix_mirrored_madctl();
 
+#if defined(CONFIG_PACKAGE_LCD_UI_ASYNC_FLUSH)
+    /* Swap in the non-blocking (EasyDMA async) SPI flush callback before
+     * the first widget is drawn, so no frame goes through the blocking
+     * mipi_dbi_spi write path. */
+    lcd_async_flush_install();
+#endif
+
     pipe_bender_ui_create();
 
     /* Render the first frame before turning the backlight/blanking on,
      * so the panel doesn't flash stale/garbage content. */
     lv_task_handler();
+#if defined(CONFIG_PACKAGE_LCD_UI_ASYNC_FLUSH)
+    /* display_blanking_off() below issues a blocking SPI command on the
+     * same physical bus the async flush above may still be using (the
+     * pixel DMA transfer runs in the background). Wait for it to finish
+     * first so the two transfers don't race for the SPI context lock. */
+    lcd_async_flush_wait_idle();
+#endif
     display_blanking_off(display_dev);
     lcd_backlight_on();
 
