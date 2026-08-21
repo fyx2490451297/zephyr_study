@@ -1,9 +1,16 @@
 ## 第一步：更新系统并安装系统依赖
 
+首先需要确保系统是最新并且安装zephyr编译所需的底层工具(Cmake,Ninja和设备树编译器)
+
 打开终端，运行以下命令：
 
 ```
 sudo apt update
+sudo apt upgrade
+
+# 安装核心开发工具和依赖
+
+```
 sudo apt install -y git cmake ninja-build gperf ccache dfu-util \
   device-tree-compiler wget python3-dev python3-pip python3-venv \
   python3-tk python3-wheel xz-utils file make gcc
@@ -24,7 +31,8 @@ python3 -m venv ncs-dev
 source ncs-dev/bin/activate
 ```
 
-注意：每次打开新终端准备开发zephyr时，都需要先运行 `source ~/nrf-dev/ncs-dev/bin/activate`来激活环境
+注意：每次基于nrf52833打开新终端准备开发zephyr时，都需要先运行`source ~/nrf-dev/ncs-dev/bin/activate`来激活环境
+激活完之后 前面会出现（ncs-dev）
 
 ---
 
@@ -45,7 +53,9 @@ west update
 # 4. 导出 Zephyr 环境并安装相关的 Python 依赖包
 
 pip3 install -r zephyr/scripts/requirements.txt
+
 pip3 install -r nrf/scripts/requirements.txt
+
 pip3 install -r bootloader/mcuboot/scripts/requirements.txt
 
 west zephyr-export

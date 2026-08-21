@@ -6,7 +6,7 @@
 
 ```
 sudo apt update
-sudo apt upgrade -y
+sudo apt upgrade
 
 # 安装核心开发工具和依赖
 sudo apt install --no-install-recommends git cmake ninja-build gperf \
@@ -29,11 +29,11 @@ mkdir ~/zephyrproject
 cd ~/zephyrproject
 
 # 创建并激活虚拟环境
-python3 -m venv ~/.venv
-source ~/.venv/bin/activate
+python3 -m venv .venv
+source ~/zephyrproject/.venv/bin/activate
 ```
 
-注意：每次打开新终端准备开发zephyr时，都需要先运行 `source ~/.venv/bin/activate`来激活环境
+注意：每次打开新终端准备开发zephyr时，即使重新打开终端，都需要先运行 `source ~/zephyrproject/.venv/bin/activate`来激活环境
 
 ---
 
@@ -56,11 +56,12 @@ west update
 ## 第四步：导出CMake包并安装python依赖
 
 ```
+# 安装所需的 Python 依赖项(需要在根目录下运行)
+pip install -r ~/zephyrproject/zephyr/scripts/requirements.txt
+
 # 导出 Zephyr 的 CMake 包
 west zephyr-export
 
-# 安装所需的 Python 依赖项
-pip install -r ~/zephyrproject/zephyr/scripts/requirements.txt
 ```
 
 ---
@@ -78,8 +79,17 @@ wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/zeph
 tar xvf zephyr-sdk-0.17.0_linux-aarch64_minimal.tar.xz
 
 # 进入 SDK 目录并运行安装脚本
-cd zephyr-sdk-0.17.0
+
+# 创建统一工具链目录
+mkdir -p ~/tools
+
+# 移动 Zephyr SDK
+mv ~/zephyr-sdk-0.17.0 ~/tools/
+
+#重新执行安装与注册脚本
+cd ~/tools/zephyr-sdk-0.17.0
 ./setup.sh
+
 ```
 
 ---
@@ -91,6 +101,12 @@ cd zephyr-sdk-0.17.0
 ```
 # 确保在 zephyr 目录下
 cd ~/zephyrproject/zephyr
+
+#切换到v3.3.0的分支下面
+git checkout zephyr-v3.3.0、
+
+#需要将zephyr的submoudle也更新一下
+west update
 
 # 编译针对 ARM Cortex-M3 模拟器的 Hello World
 west build -b qemu_cortex_m3 samples/hello_world
